@@ -495,29 +495,32 @@ namespace NpcScan.Controller
             input = stringInputValue[3];
             if (!input.IsNullOrEmpty())
             {
-                if (input.Length == 1 || input.Length == 2)
+                if (int.TryParse(input.Substring(0, 1), out _))
                 {
-                    if (int.TryParse(input.Substring(0, 1), out int identity) && 1 <= identity && identity <= 9)
+                    if (input.Length == 1 || input.Length == 2)
                     {
-                        int identityZerobase = 9 - identity;
-                        if (input.Length == 1)
+                        if (int.TryParse(input.Substring(0, 1), out int identity) && 1 <= identity && identity <= 9)
                         {
-                            if (identityZerobase != character.organizationInfo[1])
+                            int identityZerobase = 9 - identity;
+                            if (input.Length == 1)
+                            {
+                                if (identityZerobase != character.organizationInfo[1])
+                                {
+                                    return false;
+                                }
+                            }
+                            else if (input[1] == '+' && !(character.organizationInfo[1] >= identityZerobase))
+                            {
+                                return false;
+                            }
+                            else if (input[1] == '-' && !(character.organizationInfo[1] <= identityZerobase))
                             {
                                 return false;
                             }
                         }
-                        else if (input[1] == '+' && !(character.organizationInfo[1] >= identityZerobase))
-                        {
-                            return false;
-                        }
-                        else if (input[1] == '-' && !(character.organizationInfo[1] <= identityZerobase))
-                        {
-                            return false;
-                        }
                     }
                 }
-                else if (!character.identify.Equals(input))
+                else if (!character.identify.Contains(input))
                 {
                     return false;
                 }
