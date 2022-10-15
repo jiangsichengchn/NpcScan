@@ -444,6 +444,32 @@ namespace NpcScan.Controller
             return true;
         }
 
+        private Dictionary<string, List<string>> featureToGroup = null;
+        private Dictionary<string, int> featureToLevel = null;
+
+        private void SetupFeatureToGroup()
+        {
+            if (featureToGroup == null)
+            {
+                featureToGroup = new Dictionary<string, List<string>>();
+                featureToLevel = new Dictionary<string, int>();
+
+                List<string> tmp = null;
+                var preMutexGroupId = -1;
+                foreach (var feature in CharacterFeature.Instance)
+                {
+                    if (feature.MutexGroupId != preMutexGroupId)
+                    {
+                        preMutexGroupId = feature.MutexGroupId;
+                        tmp = new List<string>();
+
+                    }
+                    tmp.Add(feature.Name);
+                    featureToGroup[feature.Name] = tmp;
+                    featureToLevel[feature.Name] = feature.Level;
+                }
+            }
+        }
         public bool CheckString(CharacterData character)
         {
             string input = stringInputValue[0];
@@ -469,9 +495,60 @@ namespace NpcScan.Controller
             input = stringInputValue[3];
             if (!input.IsNullOrEmpty())
             {
-                if (character.identify.Equals(input))
+                if (input.Length == 1 || input.Length == 2)
+                {
+                    if (int.TryParse(input.Substring(0, 1), out int identity) && 1 <= identity && identity <= 9)
+                    {
+                        int identityZerobase = 9 - identity;
+                        if (input.Length == 1)
+                        {
+                            if (identityZerobase != character.organizationInfo[1])
+                            {
+                                return false;
+                            }
+                        }
+                        else if (input[1] == '+' && !(character.organizationInfo[1] >= identityZerobase))
+                        {
+                            return false;
+                        }
+                        else if (input[1] == '-' && !(character.organizationInfo[1] <= identityZerobase))
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else if (!character.identify.Equals(input))
+                {
                     return false;
+                }
             }
+
+            if (featureToGroup == null)
+            {
+                SetupFeatureToGroup();
+            }
+
+            Func<string, bool> wordNotMatchCharacterFeatureList = word =>
+            {
+                if (word.Length == 4)
+                {
+                    return featureToGroup.ContainsKey(word) &&
+                        featureToGroup[word].All(targetFeature => character.featureList.All(feature => !feature.Equals(targetFeature)));
+                }
+                else if (word.Length == 5)
+                {
+                    var targetWord = word.Substring(0, 4);
+                    return word[4] == '+' && featureToGroup.ContainsKey(targetWord) &&
+                        featureToGroup[targetWord].All(targetFeature =>
+                            featureToLevel[targetFeature] < 0 ||
+                                character.featureList.All(feature => !feature.Equals(targetFeature)));
+                }
+                else
+                {
+                    return character.featureList.All(feature => !feature.Contains(word));
+                }
+            };
+
             input = stringInputValue[4];
             if (!input.IsNullOrEmpty())
             {
@@ -481,21 +558,22 @@ namespace NpcScan.Controller
                 {
                     var list = input.Split('&');
 
-                    if (list.Any(feature => character.featureList.All(value => !value.Contains(feature))))
+                    if (list.Any(word => wordNotMatchCharacterFeatureList(word)))
                         return false;
                 }
                 else if (input.Contains("|"))
                 {
                     var list = input.Split('|');
-                    if (list.All(feature => character.featureList.All(value => !value.Contains(feature))))
+                    if (list.All(word => wordNotMatchCharacterFeatureList(word)))
                         return false;
                 }
                 else
                 {
-                    if (character.featureList.All(value => !value.Contains(input)))
+                    if (wordNotMatchCharacterFeatureList(input))
                         return false;
                 }
             }
+
             input = stringInputValue[5];
             if (!input.IsNullOrEmpty())
             {
