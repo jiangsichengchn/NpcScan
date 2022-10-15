@@ -15,6 +15,7 @@ using UnityEngine;
 using NpcScan.Utils;
 using FrameWork;
 using XLua.Cast;
+using System.Security.Principal;
 
 namespace NpcScan.Controller
 {
@@ -495,11 +496,11 @@ namespace NpcScan.Controller
             input = stringInputValue[3];
             if (!input.IsNullOrEmpty())
             {
-                if (int.TryParse(input.Substring(0, 1), out _))
+                if (int.TryParse(input.Substring(0, 1), out int identity))
                 {
                     if (input.Length == 1 || input.Length == 2)
                     {
-                        if (int.TryParse(input.Substring(0, 1), out int identity) && 1 <= identity && identity <= 9)
+                        if (1 <= identity && identity <= 9)
                         {
                             int identityZerobase = 9 - identity;
                             if (input.Length == 1)
