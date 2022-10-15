@@ -1,0 +1,12 @@
+C:\Game\Steam\steamapps\common\The Scroll Of Taiwu\Mod\NPCScan\Plugins\Debug\net5.0\NPCScanBackend.deps.json
+C:\Game\Steam\steamapps\common\The Scroll Of Taiwu\Mod\NPCScan\Plugins\Debug\net5.0\NPCScanBackend.dll
+C:\Game\Steam\steamapps\common\The Scroll Of Taiwu\Mod\NPCScan\Plugins\Debug\net5.0\NPCScanBackend.pdb
+C:\Code\TaiwuModify\MyTaiwuCode\NPCScanBackend\obj\Debug\net5.0\NPCScanBackend.csproj.AssemblyReference.cache
+C:\Code\TaiwuModify\MyTaiwuCode\NPCScanBackend\obj\Debug\net5.0\NPCScanBackend.GeneratedMSBuildEditorConfig.editorconfig
+C:\Code\TaiwuModify\MyTaiwuCode\NPCScanBackend\obj\Debug\net5.0\NPCScanBackend.AssemblyInfoInputs.cache
+C:\Code\TaiwuModify\MyTaiwuCode\NPCScanBackend\obj\Debug\net5.0\NPCScanBackend.AssemblyInfo.cs
+C:\Code\TaiwuModify\MyTaiwuCode\NPCScanBackend\obj\Debug\net5.0\NPCScanBackend.csproj.CoreCompileInputs.cache
+C:\Code\TaiwuModify\MyTaiwuCode\NPCScanBackend\obj\Debug\net5.0\NPCScanBackend.dll
+C:\Code\TaiwuModify\MyTaiwuCode\NPCScanBackend\obj\Debug\net5.0\refint\NPCScanBackend.dll
+C:\Code\TaiwuModify\MyTaiwuCode\NPCScanBackend\obj\Debug\net5.0\NPCScanBackend.pdb
+C:\Code\TaiwuModify\MyTaiwuCode\NPCScanBackend\obj\Debug\net5.0\ref\NPCScanBackend.dll
