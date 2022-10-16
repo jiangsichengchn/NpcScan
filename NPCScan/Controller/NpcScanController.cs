@@ -710,5 +710,10 @@ namespace NpcScan.Controller
         {
             view.Hide();
         }
+
+        public void OnDestroy()
+        {
+            view.Destroy();
+        }
     }
 }

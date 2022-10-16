@@ -78,6 +78,11 @@ namespace NpcScan
             LayoutRebuilder.ForceRebuildLayoutImmediate(inputContainer.GetComponent<RectTransform>());
         }
 
+        public void Destroy()
+        {
+            Object.Destroy(root);
+        }
+
         //private void InitTooltip()
         //{
         //    var canva = new GameObject("test");
