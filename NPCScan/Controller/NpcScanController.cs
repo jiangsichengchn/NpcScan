@@ -16,6 +16,8 @@ using NpcScan.Utils;
 using FrameWork;
 using XLua.Cast;
 using System.Security.Principal;
+using System.IO.MemoryMappedFiles;
+using System.Text;
 
 namespace NpcScan.Controller
 {
@@ -208,9 +210,18 @@ namespace NpcScan.Controller
         private void GetAllCharacters()
         {
             SingletonObject.getInstance<AsynchMethodDispatcher>().AsynchMethodCall(97, 0, (offset, dataPool) =>
-            {              
-                string AllCharacterString = File.ReadAllText("NpcScanData.json");
-
+            {
+                string AllCharacterString;
+                using (var memoryMappedFile = MemoryMappedFile.OpenExisting("NpcScanData"))
+                {
+                    using (var accessor = memoryMappedFile.CreateViewAccessor())
+                    {
+                        byte[] data = new byte[accessor.Capacity];
+                        accessor.ReadArray(0, data, 0, data.Length);
+                        AllCharacterString = Encoding.Unicode.GetString(data);
+                    }
+                }
+                //string AllCharacterString = File.ReadAllText("NpcScanData.json");
                 characterDataList = JsonConvert.DeserializeObject<List<CharacterData>>(AllCharacterString);
 
                 Model.Instance.SetData(characterDataList);
