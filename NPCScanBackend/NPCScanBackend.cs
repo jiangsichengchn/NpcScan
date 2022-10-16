@@ -16,6 +16,7 @@ using TaiwuModdingLib.Core.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using GameData.Domains.Map;
+using System.IO.MemoryMappedFiles;
 
 namespace NpcScan
 {
@@ -23,6 +24,7 @@ namespace NpcScan
     public class NPCScanBackend : TaiwuRemakePlugin
     {
         private Harmony harmony;
+        
         public override void Dispose()
         {
             harmony.UnpatchSelf();
@@ -34,9 +36,18 @@ namespace NpcScan
             Init();
         }
 
-        private void Init()
+        public override void OnLoadedArchiveData()
         {
+            base.OnLoadedArchiveData();
+            if (memoryMappedFile != null)
+            {
+                memoryMappedFile.Dispose();
+                memoryMappedFile = null;
+            }           
+        }
 
+        private void Init()
+        {           
         }
 
         [HarmonyPrefix]
@@ -52,6 +63,9 @@ namespace NpcScan
             }
             return true;
         }
+
+        private static MemoryMappedFile memoryMappedFile;
+
         private static int GetCharactersData(Operation operation, RawDataPool argDataPool, RawDataPool returnDataPool, DataContext context)
         {
             Dictionary<int, Character> AliveCharacterDic = (Dictionary<int, Character>)Traverse.Create(DomainManager.Character).Field("_objects").GetValue();
@@ -80,7 +94,17 @@ namespace NpcScan
 
             var options = new JsonSerializerOptions();
             options.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
-            File.WriteAllText("../NpcScanData.json", JsonSerializer.Serialize(characterDataList, options));
+            string jsonContent = JsonSerializer.Serialize(characterDataList, options);
+            byte[] data = Encoding.Unicode.GetBytes(jsonContent);
+
+            if (memoryMappedFile == null)
+                memoryMappedFile = MemoryMappedFile.CreateOrOpen("NpcScanData", data.LongLength);            
+            using (var accessor = memoryMappedFile.CreateViewAccessor())
+            {
+                accessor.WriteArray(0, data, 0, data.Length);
+            }
+
+            //File.WriteAllText("../NpcScanData.json", JsonSerializer.Serialize(characterDataList, options));
 
             int num = 0;
 

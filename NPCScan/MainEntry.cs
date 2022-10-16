@@ -38,10 +38,12 @@ namespace NpcScan
                 BindKeyCode();
             }                     
         }
+
         public override void OnModSettingUpdate()
         {
             BindKeyCode();
         }
+
         public void BindKeyCode()
         {
             NpcScanController controller = gameObject.GetComponent<NpcScanController>();
