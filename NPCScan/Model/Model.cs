@@ -1,17 +1,8 @@
 ﻿using Config;
 using GameData.Domains.Character;
 using GameData.Domains.Character.Display;
-using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using TMPro;
-using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace NpcScan
 {
@@ -37,10 +28,12 @@ namespace NpcScan
             if (dataList == null || dataList.Count == 0)
                 return;
             AllDataList = dataList;
+            WorldMapModel worldMapModel = SingletonObject.getInstance<WorldMapModel>();
             foreach (CharacterData data in dataList)
             {
-                OrganizationInfo organizationInfo = new OrganizationInfo((sbyte)data.organizationInfo[0], (sbyte)data.organizationInfo[1], Convert.ToBoolean(data.organizationInfo[2]), (short)data.organizationInfo[3]);
-                data.organization = Organization.Instance[organizationInfo.OrgTemplateId].Name;
+                OrganizationInfo organizationInfo = new OrganizationInfo((sbyte)data.organizationInfo[0], (sbyte)data.organizationInfo[1], Convert.ToBoolean(data.organizationInfo[2]), (short)data.organizationInfo[3]);            
+                short randomNameId = (short)(worldMapModel.SettlementRandNameDict.ContainsKey(organizationInfo.SettlementId) ? worldMapModel.SettlementRandNameDict[organizationInfo.SettlementId] : -1);
+                data.organization = CommonUtils.GetOrganizationString(organizationInfo.OrgTemplateId, randomNameId);
 
                 data.identify = CommonUtils.GetCharacterGradeString(organizationInfo, (sbyte)data.gender);
 

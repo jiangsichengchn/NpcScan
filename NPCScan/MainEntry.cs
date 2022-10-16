@@ -1,14 +1,6 @@
-﻿using GameData.Serializer;
-using HarmonyLib;
-using Newtonsoft.Json;
-using NpcScan.Controller;
+﻿using NpcScan.Controller;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TaiwuModdingLib.Core.Plugin;
 using UnityEngine;
 

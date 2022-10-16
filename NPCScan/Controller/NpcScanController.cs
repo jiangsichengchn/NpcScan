@@ -1,23 +1,15 @@
 ﻿using Config;
-using GameData.Domains.Character.Creation;
 using GameData.Domains.Character;
+using GameData.Domains.Character.Creation;
 using GameData.Domains.Map;
-using GameData.Serializer;
-using HarmonyLib;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
-using TaiwuModdingLib.Core.Plugin;
+using System.Text;
 using TMPro;
 using UnityEngine;
-using NpcScan.Utils;
-using FrameWork;
-using XLua.Cast;
-using System.Security.Principal;
-using System.IO.MemoryMappedFiles;
-using System.Text;
 
 namespace NpcScan.Controller
 {
@@ -55,6 +47,7 @@ namespace NpcScan.Controller
             }
         }
 
+        #region sort
         public void SortClick(int index)
         {
             if (index >= 12 && index <= 17)
@@ -114,6 +107,29 @@ namespace NpcScan.Controller
             }
             SearchResult(0);
         }
+        
+        public int ItemCompare(CharacterData character1, CharacterData character2)
+        {
+            List<int[]> Item1 = character1.items;
+            List<int[]> Item2 = character2.items;
+            int length = Math.Min(Item1.Count, Item2.Count);
+            for (int index = 0; index < length; ++index)
+            {
+                if (Item1[index][2] < Item2[index][2])
+                    return 1;
+                else if (Item1[index][2] > Item2[index][2])
+                    return -1;
+            }
+            for (int index = 0; index < length; ++index)
+            {
+                if (Item1[index][1] < Item2[index][1])
+                    return 1;
+                else if (Item1[index][1] > Item2[index][1])
+                    return -1;
+            }
+            return 0;
+        }
+        #endregion
 
         public void OpenCharacterMenu(int index)
         {            
@@ -131,29 +147,7 @@ namespace NpcScan.Controller
                 }    
             }               
         }
-
-        public int ItemCompare(CharacterData character1, CharacterData character2)
-        {
-            List<int[]> Item1 = character1.items;
-            List<int[]> Item2 = character2.items;
-            int length = Math.Min(Item1.Count, Item2.Count);
-            for (int index=0; index<length; ++index)
-            {
-                if (Item1[index][2] < Item2[index][2])
-                    return 1;
-                else if (Item1[index][2] > Item2[index][2])
-                    return -1;
-            }
-            for (int index = 0; index < length; ++index)
-            {
-                if (Item1[index][1] < Item2[index][1])
-                    return 1;
-                else if (Item1[index][1] > Item2[index][1])
-                    return -1;
-            }
-            return 0;
-        }
-
+       
         public void Update()
         {
             if (Input.GetKeyUp(mainFormKey))
@@ -228,17 +222,7 @@ namespace NpcScan.Controller
                 SetOptions();
                 SearchResult(0);
             });
-        }
-
-        public void ShowUI()
-        {
-            view.Show();
-        }
-
-        public void HideUI()
-        {
-            view.Hide();
-        }
+        }       
 
         private int _page;
         public int page
@@ -292,14 +276,14 @@ namespace NpcScan.Controller
 
                 List<Transform> rowLabels = view.resultLabels[index];             
 
-                rowLabels[0].GetComponent<TextMeshProUGUI>().text = characterData.name;
-                rowLabels[1].GetComponent<TextMeshProUGUI>().text = characterData.age.ToString();
-                rowLabels[2].GetComponent<TextMeshProUGUI>().text = CommonUtils.GetGenderString((sbyte)characterData.gender);
+                rowLabels[(int)Model.CharacterInfo.姓名].GetComponent<TextMeshProUGUI>().text = characterData.name;
+                rowLabels[(int)Model.CharacterInfo.年龄].GetComponent<TextMeshProUGUI>().text = characterData.age.ToString();
+                rowLabels[(int)Model.CharacterInfo.性别].GetComponent<TextMeshProUGUI>().text = CommonUtils.GetGenderString((sbyte)characterData.gender);
 
                 Location location = new Location((short)characterData.location[0], (short)characterData.location[1]);
                 if (location.AreaId == -1 || location.BlockId == -1)
                 {
-                    rowLabels[3].GetComponent<TextMeshProUGUI>().text = $"无法到达地区";
+                    rowLabels[(int)Model.CharacterInfo.位置].GetComponent<TextMeshProUGUI>().text = $"无法到达地区";
                 }
                 else
                 {
@@ -312,65 +296,58 @@ namespace NpcScan.Controller
                         {
                             string block = instance.GetBlockName(location.AreaId, blockData.BlockId, blockData.TemplateId);
                             ByteCoordinate blockPos = blockData.GetBlockPos();
-                            rowLabels[3].GetComponent<TextMeshProUGUI>().text = $"{state} {area} {block} ({blockPos.X},{blockPos.Y})";
+                            rowLabels[(int)Model.CharacterInfo.位置].GetComponent<TextMeshProUGUI>().text = $"{state} {area} {block} ({blockPos.X},{blockPos.Y})";
                         }
                         else
                         {
-                            rowLabels[3].GetComponent<TextMeshProUGUI>().text = $"{state} {area}";
+                            rowLabels[(int)Model.CharacterInfo.位置].GetComponent<TextMeshProUGUI>().text = $"{state} {area}";
                         }
                     }
                     catch
                     {
-                        rowLabels[3].GetComponent<TextMeshProUGUI>().text = $"非法位置";
+                        rowLabels[(int)Model.CharacterInfo.位置].GetComponent<TextMeshProUGUI>().text = $"非法位置";
                     }
                 }
 
                 string charm = CommonUtils.GetCharmLevelText((short)characterData.attraction, (sbyte)characterData.gender, 16, 1, CreatingType.IsFixedPresetType((byte)characterData.creatingType));
-                rowLabels[4].GetComponent<TextMeshProUGUI>().text = $"{charm}({characterData.attraction})";
+                rowLabels[(int)Model.CharacterInfo.魅力].GetComponent<TextMeshProUGUI>().text = $"{charm}({characterData.attraction})";
 
                 OrganizationInfo organizationInfo = new OrganizationInfo((sbyte)characterData.organizationInfo[0], (sbyte)characterData.organizationInfo[1], Convert.ToBoolean(characterData.organizationInfo[2]), (short)characterData.organizationInfo[3]);
-                rowLabels[5].GetComponent<TextMeshProUGUI>().text = characterData.organization;
+                short randomNameId = (short)(instance.SettlementRandNameDict.ContainsKey(organizationInfo.SettlementId) ? instance.SettlementRandNameDict[organizationInfo.SettlementId] : -1);
+                rowLabels[(int)Model.CharacterInfo.从属].GetComponent<TextMeshProUGUI>().text = characterData.organization;
 
-                rowLabels[6].GetComponent<TextMeshProUGUI>().text = characterData.identify;
+                rowLabels[(int)Model.CharacterInfo.身份].GetComponent<TextMeshProUGUI>().text = characterData.identify;
 
-                rowLabels[7].GetComponent<TextMeshProUGUI>().text = CommonUtils.GetBehaviorString((sbyte)characterData.behaviorType);
-                rowLabels[8].GetComponent<TextMeshProUGUI>().text = Utils.CommonUtils.GetMariageStatu(characterData.marriage);
-                rowLabels[9].GetComponent<TextMeshProUGUI>().text = Utils.CommonUtils.GetQualificationGrowth(characterData.age, characterData.lifeSkillGrowthType);
-                rowLabels[10].GetComponent<TextMeshProUGUI>().text = Utils.CommonUtils.GetQualificationGrowth(characterData.age, characterData.combatSkillGrowthType);
-                rowLabels[11].GetComponent<TextMeshProUGUI>().text = $"{characterData.health}/{characterData.maxLeftHealth}";
+                rowLabels[(int)Model.CharacterInfo.立场].GetComponent<TextMeshProUGUI>().text = CommonUtils.GetBehaviorString((sbyte)characterData.behaviorType);
+                rowLabels[(int)Model.CharacterInfo.婚姻].GetComponent<TextMeshProUGUI>().text = Utils.CommonUtils.GetMariageStatu(characterData.marriage);
+                rowLabels[(int)Model.CharacterInfo.技艺成长].GetComponent<TextMeshProUGUI>().text = Utils.CommonUtils.GetQualificationGrowth(characterData.age, characterData.lifeSkillGrowthType);
+                rowLabels[(int)Model.CharacterInfo.功法成长].GetComponent<TextMeshProUGUI>().text = Utils.CommonUtils.GetQualificationGrowth(characterData.age, characterData.combatSkillGrowthType);
+                rowLabels[(int)Model.CharacterInfo.健康].GetComponent<TextMeshProUGUI>().text = $"{characterData.health}/{characterData.maxLeftHealth}";
 
                 for (int attributeIndex = 0; attributeIndex < 6; ++attributeIndex)
-                    rowLabels[12 + attributeIndex].GetComponent<TextMeshProUGUI>().text = characterData.maxMainAttributes[attributeIndex].ToString();
+                    rowLabels[(int)Model.CharacterInfo.膂力 + attributeIndex].GetComponent<TextMeshProUGUI>().text = characterData.maxMainAttributes[attributeIndex].ToString();
 
                 for (int combatSkillIndex = 0; combatSkillIndex < 14; ++combatSkillIndex)
                 {
-                    var text = rowLabels[18 + combatSkillIndex].GetComponent<TextMeshProUGUI>();
+                    var text = rowLabels[(int)Model.CharacterInfo.内功 + combatSkillIndex].GetComponent<TextMeshProUGUI>();
                     text.text = characterData.combatSkillQualifications[combatSkillIndex].ToString();
                     text.color = CommonUtils.GetCharacterSkillColorByValue((short)characterData.combatSkillQualifications[combatSkillIndex]);
                 }
 
                 for (int lifeSkillIndex = 0; lifeSkillIndex < 16; ++lifeSkillIndex)
                 {
-                    var text = rowLabels[32 + lifeSkillIndex].GetComponent<TextMeshProUGUI>();
+                    var text = rowLabels[(int)Model.CharacterInfo.音律 + lifeSkillIndex].GetComponent<TextMeshProUGUI>();
                     text.text = characterData.lifeSkillQualifications[lifeSkillIndex].ToString();
                     text.color = CommonUtils.GetCharacterSkillColorByValue((short)characterData.lifeSkillQualifications[lifeSkillIndex]);
                 }
 
-                rowLabels[48].GetComponent<TextMeshProUGUI>().text = string.Join(",", characterData.preexistenceCharacterNames);
+                rowLabels[(int)Model.CharacterInfo.前世].GetComponent<TextMeshProUGUI>().text = string.Join(",", characterData.preexistenceCharacterNames);
 
-                rowLabels[49].GetComponent<TextMeshProUGUI>().text = string.Join(",", characterData.itemList);
+                rowLabels[(int)Model.CharacterInfo.物品].GetComponent<TextMeshProUGUI>().text = string.Join(",", characterData.itemList);
 
-                rowLabels[50].GetComponent<TextMeshProUGUI>().text = string.Join(",", characterData.featureList);
+                rowLabels[(int)Model.CharacterInfo.人物特性].GetComponent<TextMeshProUGUI>().text = string.Join(",", characterData.featureList);
             }
-        }
-
-        public void SetOptions()
-        {
-            GetIntInput();
-            GetStringInput();
-            GetBoolInput();
-            Model.Instance.CurrentDataList = Model.Instance.AllDataList.FindAll(character => CheckSearchOption(character));
-        }
+        }       
 
         public void NextPage()
         {
@@ -382,9 +359,18 @@ namespace NpcScan.Controller
             SearchResult(-1);
         }
 
+        #region filter
         private List<int> intInputValue = new List<int>();
         private List<string> stringInputValue = new List<string>();
         private List<bool> boolInputValue = new List<bool>();
+
+        public void SetOptions()
+        {
+            GetIntInput();
+            GetStringInput();
+            GetBoolInput();
+            Model.Instance.CurrentDataList = Model.Instance.AllDataList.FindAll(character => CheckSearchOption(character));
+        }
 
         public bool CheckSearchOption(CharacterData character)
         {
@@ -712,6 +698,17 @@ namespace NpcScan.Controller
                     continue;
                 boolInputValue.Add(view.ToggleDic[(Model.Toggle)index].isOn);
             }
+        }
+        #endregion
+
+        public void ShowUI()
+        {
+            view.Show();
+        }
+
+        public void HideUI()
+        {
+            view.Hide();
         }
     }
 }

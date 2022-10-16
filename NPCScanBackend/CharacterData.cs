@@ -1,21 +1,12 @@
-﻿using BehTree;
-using Config;
-using GameData.Domains;
+﻿using GameData.Domains;
 using GameData.Domains.Character;
-using GameData.Domains.Character.Creation;
-using GameData.Domains.Character.Display;
 using GameData.Domains.Character.Relation;
 using GameData.Domains.Item;
 using GameData.Domains.Map;
-using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Character = GameData.Domains.Character.Character;
-using LifeSkillItem = GameData.Domains.Character.LifeSkillItem;
 
 namespace NpcScan
 {
@@ -58,7 +49,7 @@ namespace NpcScan
 
         public void SetData(Character character)
         {
-            this.isAlive = 1;
+            isAlive = 1;
             id = character.GetId();
             templateId = character.GetTemplateId();
 

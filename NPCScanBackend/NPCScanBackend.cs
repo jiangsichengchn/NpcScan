@@ -1,22 +1,15 @@
 ﻿using GameData.Common;
-using GameData.GameDataBridge;
-using GameData.Serializer;
-using GameData.Utilities;
-using HarmonyLib;
-using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using TaiwuModdingLib.Core.Plugin;
-using System.IO;
-using System.Text;
-using GameData.Domains.Taiwu;
 using GameData.Domains;
 using GameData.Domains.Character;
-using TaiwuModdingLib.Core.Utils;
-using System.Collections.Generic;
-using System.Linq;
 using GameData.Domains.Map;
+using GameData.GameDataBridge;
+using GameData.Utilities;
+using HarmonyLib;
+using System.Collections.Generic;
 using System.IO.MemoryMappedFiles;
+using System.Text;
+using System.Text.Json;
+using TaiwuModdingLib.Core.Plugin;
 
 namespace NpcScan
 {

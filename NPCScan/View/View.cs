@@ -1,15 +1,9 @@
 ﻿using FrameWork.ModSystem;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TMPro;
-using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.UI;
 using Image = UnityEngine.UI.Image;
-using NpcScan.Controller;
-using static NpcScan.Model;
 
 namespace NpcScan
 {
