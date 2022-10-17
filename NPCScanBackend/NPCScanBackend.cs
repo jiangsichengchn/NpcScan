@@ -90,8 +90,9 @@ namespace NpcScan
             string jsonContent = JsonSerializer.Serialize(characterDataList, options);
             byte[] data = Encoding.Unicode.GetBytes(jsonContent);
 
-            if (memoryMappedFile == null)
-                memoryMappedFile = MemoryMappedFile.CreateOrOpen("NpcScanData", data.LongLength);            
+            if (memoryMappedFile != null)
+                memoryMappedFile.Dispose();
+            memoryMappedFile = MemoryMappedFile.CreateOrOpen("NpcScanData", data.LongLength);            
             using (var accessor = memoryMappedFile.CreateViewAccessor())
             {
                 accessor.WriteArray(0, data, 0, data.Length);

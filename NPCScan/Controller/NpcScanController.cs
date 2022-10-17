@@ -456,6 +456,8 @@ namespace NpcScan.Controller
                 var preMutexGroupId = -1;
                 foreach (var feature in CharacterFeature.Instance)
                 {
+                    if (feature.TemplateId == 168)
+                        return;
                     if (feature.MutexGroupId != preMutexGroupId)
                     {
                         preMutexGroupId = feature.MutexGroupId;
@@ -533,21 +535,22 @@ namespace NpcScan.Controller
             {
                 if (word.Length == 4)
                 {
-                    return featureToGroup.ContainsKey(word) &&
-                        featureToGroup[word].All(targetFeature => character.featureList.All(feature => !feature.Equals(targetFeature)));
+                    if (featureToGroup.ContainsKey(word))
+                    {
+                        return featureToGroup[word].All(targetFeature => character.featureList.All(feature => !feature.Equals(targetFeature)));
+                    }
                 }
                 else if (word.Length == 5)
                 {
                     var targetWord = word.Substring(0, 4);
-                    return word[4] == '+' && featureToGroup.ContainsKey(targetWord) &&
-                        featureToGroup[targetWord].All(targetFeature =>
-                            featureToLevel[targetFeature] < 0 ||
-                                character.featureList.All(feature => !feature.Equals(targetFeature)));
+                    if (featureToGroup.ContainsKey(targetWord))
+                    {
+                        return word[4] == '+' && featureToGroup[targetWord].All(targetFeature =>
+                        featureToLevel[targetFeature] < 0 || character.featureList.All(feature => !feature.Equals(targetFeature)));
+                    }                   
                 }
-                else
-                {
-                    return character.featureList.All(feature => !feature.Contains(word));
-                }
+
+                return character.featureList.All(feature => !feature.Contains(word));
             };
 
             input = stringInputValue[4];
