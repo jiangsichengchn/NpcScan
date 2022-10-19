@@ -24,7 +24,6 @@ namespace NpcScan
         public VerticalLayoutGroup inputContainer;
         public GameObject ScrollView;
 
-        Vector3 scale = new Vector3(0.6f, 0.6f, 0.6f);
         private int index = 0;
 
         private Camera mainCamera;
@@ -60,19 +59,19 @@ namespace NpcScan
 
             inputContainer = new GameObject("InputContainer").AddComponent<VerticalLayoutGroup>();
             inputContainer.spacing = 30;
-            ResetTransform(root.transform, inputContainer.transform);
+            SetTransform(root.transform, inputContainer.transform);
             inputContainer.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
             inputContainer.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0.95f);
             inputContainer.GetComponent<RectTransform>().anchorMax = new Vector2(1, 0.95f);
-            inputContainer.transform.localScale = scale;
+            inputContainer.transform.localScale = new Vector3(0.6f, 0.6f, 1);
 
             var text = GameObjectCreationUtils.InstantiateUIElement(inputContainer.transform, "Text");
             text.GetComponent<TextMeshProUGUI>().text = "Npc查找器";
             text.transform.name = "title";
-            ResetTransform(text.transform);
+            SetTransform(text.transform);
 
             //InitTooltip();
-            InitFilterContainer(inputContainer);
+            InitFilterContainer(inputContainer);          
             InitScrollView();            
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(inputContainer.GetComponent<RectTransform>());
@@ -117,7 +116,7 @@ namespace NpcScan
             filterContainer.childForceExpandHeight = false;
             filterContainer.gameObject.AddComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             filterContainer.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
-            ResetTransform(container.transform, filterContainer.transform);
+            SetTransform(container.transform, filterContainer.transform);           
 
             CreateBasicInfo(filterContainer);
             CreateCombatSkillInfo(filterContainer);
@@ -129,7 +128,7 @@ namespace NpcScan
         private void CreateBasicInfo(VerticalLayoutGroup parent)
         {
             var basicInfo = new GameObject("BasicInfo").AddComponent<HorizontalLayoutGroup>();
-            ResetTransform(parent.transform, basicInfo.transform);
+            SetTransform(parent.transform, basicInfo.transform);
             basicInfo.transform.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
             basicInfo.childForceExpandWidth = false;
 
@@ -148,7 +147,7 @@ namespace NpcScan
         private void CreateCombatSkillInfo(VerticalLayoutGroup parent)
         {
             var combatSkillInfo = new GameObject("CombatSkillInfo").AddComponent<HorizontalLayoutGroup>();
-            ResetTransform(parent.transform, combatSkillInfo.transform);
+            SetTransform(parent.transform, combatSkillInfo.transform);
             combatSkillInfo.transform.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
             combatSkillInfo.childForceExpandWidth = false;
 
@@ -162,7 +161,7 @@ namespace NpcScan
         private void CreateLifeSkillInfo(VerticalLayoutGroup parent)
         {
             var lifrSkillInfo = new GameObject("LifrSkillInfo").AddComponent<HorizontalLayoutGroup>();
-            ResetTransform(parent.transform, lifrSkillInfo.transform);
+            SetTransform(parent.transform, lifrSkillInfo.transform);
             lifrSkillInfo.transform.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
             lifrSkillInfo.childForceExpandWidth = false;
 
@@ -176,7 +175,7 @@ namespace NpcScan
         private void CreateToggleGroup(VerticalLayoutGroup parent)
         {
             var toggleGroup = new GameObject("ToggleGroup").AddComponent<HorizontalLayoutGroup>();
-            ResetTransform(parent.transform, toggleGroup.transform);
+            SetTransform(parent.transform, toggleGroup.transform);
             toggleGroup.transform.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
             toggleGroup.childForceExpandWidth = false;
 
@@ -208,7 +207,7 @@ namespace NpcScan
         private void CreateMultiSearch(VerticalLayoutGroup parent)
         {
             var multiSearch = new GameObject("MultiSearch").AddComponent<HorizontalLayoutGroup>();
-            ResetTransform(parent.transform, multiSearch.transform);
+            SetTransform(parent.transform, multiSearch.transform);
             multiSearch.transform.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
             multiSearch.childForceExpandWidth = false;
 
@@ -233,14 +232,15 @@ namespace NpcScan
 
         #region InitScrollView
         private void InitScrollView()
-        {
+        {           
             ScrollView = ABResourceManager.Instantiate("ScrollView");
-            ResetTransform(root.transform, ScrollView.transform);
-            ScrollView.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
-            ScrollView.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0.05f);
-            ScrollView.GetComponent<RectTransform>().anchorMax = new Vector2(1, 0.8f);          
-            ScrollView.transform.localScale = new Vector3(0.8f, 0.8f, 1f);
-            ScrollView.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.2f, 1);
+            SetTransform(root.transform, ScrollView.transform);
+            var rect = ScrollView.GetComponent<RectTransform>();
+            rect.pivot = new Vector2(0, 1);
+            rect.anchorMin = new Vector2(0, 0.05f);
+            rect.anchorMax = new Vector2(1, 0.8f);
+            rect.localScale = new Vector3(0.8f, 0.8f, 1);
+            ScrollView.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.2f, 1);            
             ScrollView.GetComponent<ScrollRect>().movementType = ScrollRect.MovementType.Clamped;
             ScrollView.GetComponent<ScrollRect>().horizontal = false;
             ScrollView.GetComponent<ScrollRect>().scrollSensitivity = 25;
@@ -251,14 +251,14 @@ namespace NpcScan
             scrollContent.gameObject.AddComponent<VerticalLayoutGroup>().spacing = 20;
 
             CreateTitle(scrollContent);
-            CreateScanResult(scrollContent);
+            CreateScanResult(scrollContent);          
         }
 
         private void CreateTitle(Transform parent)
         {
             var buttonTitle = new GameObject("ButtonTitle").AddComponent<HorizontalLayoutGroup>();
             buttonTitle.spacing = 20;
-            ResetTransform(parent, buttonTitle.transform);
+            SetTransform(parent, buttonTitle.transform);
             buttonTitle.transform.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
             buttonTitle.childForceExpandWidth = false;
 
@@ -290,7 +290,7 @@ namespace NpcScan
             {
                 var line = new GameObject("line" + rowIndex.ToString()).AddComponent<HorizontalLayoutGroup>();
                 line.spacing = 20;
-                ResetTransform(parent, line.transform);
+                SetTransform(parent, line.transform);
                 line.transform.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
                 line.childForceExpandWidth = false;
                 line.gameObject.AddComponent<CImage>().color = new Color(0.3f, 0.3f, 0.3f, 0.5f);
@@ -336,7 +336,7 @@ namespace NpcScan
         private GameObject CreateInputField(Transform parent, Model.Input type, string text = "", float minWidth = 100, float minHeight = 50)
         {
             var gameObject = ABResourceManager.Instantiate("InputField");
-            ResetTransform(parent, gameObject.transform);
+            SetTransform(parent, gameObject.transform);
             var element = gameObject.AddComponent<LayoutElement>();
             element.minWidth = minWidth;
             element.minHeight = minHeight;
@@ -350,7 +350,7 @@ namespace NpcScan
         private GameObject CreateLabel(Transform parent, string text, float minWidth = 100, float minHeight = 50)
         {
             var gameObject = GameObjectCreationUtils.InstantiateUIElement(parent, "Text");
-            ResetTransform(gameObject.transform);
+            SetTransform(gameObject.transform);
             var element = gameObject.AddComponent<LayoutElement>();
             element.minWidth = minWidth;
             element.minHeight = minHeight;
@@ -362,7 +362,7 @@ namespace NpcScan
         private GameObject CreateToggle(Transform parent, Model.Toggle type, string text, float minWidth = 100, float minHeight = 50)
         {
             var gameObject = GameObjectCreationUtils.InstantiateUIElement(parent, "CommonToggle1_Switch");
-            ResetTransform(gameObject.transform);
+            SetTransform(gameObject.transform);
             var element = gameObject.AddComponent<LayoutElement>();
             element.minWidth = minWidth;
             element.minHeight = minHeight;
@@ -376,7 +376,7 @@ namespace NpcScan
         private GameObject CreateButton(Transform parent, Model.CharacterInfo type, string text, float minWidth = 100, float minHeight = 50)
         {
             var gameObject = GameObjectCreationUtils.InstantiateUIElement(parent, "Button");
-            ResetTransform(gameObject.transform);
+            SetTransform(gameObject.transform);
             gameObject.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = text;
             var element = gameObject.AddComponent<LayoutElement>();
             element.minWidth = minWidth;
@@ -387,14 +387,14 @@ namespace NpcScan
         }
 
         #endregion
-        private void ResetTransform(Transform parent, Transform transform)
+        private void SetTransform(Transform parent, Transform transform)
         {
             transform.SetParent(parent, false);
             transform.localPosition = Vector3.zero;
             transform.localScale = new Vector3(1, 1, 1);
         }
 
-        private void ResetTransform(Transform transform)
+        private void SetTransform(Transform transform)
         {
             transform.localPosition = Vector3.zero;
             transform.localScale = new Vector3(1, 1, 1);
@@ -403,6 +403,17 @@ namespace NpcScan
         public void Show()
         {
             root.SetActive(true);
+
+            float xScale = Screen.width / inputContainer.preferredWidth;
+            inputContainer.transform.localScale = new Vector3(xScale, xScale, 1);
+
+            float height = inputContainer.preferredHeight * inputContainer.transform.localScale.x;
+            float yAnchor = 1 - (0.05f * Screen.height + height) / Screen.height;
+            var rect = ScrollView.GetComponent<RectTransform>();
+            rect.anchorMax = new Vector2(1, yAnchor);
+            float yScale = yAnchor * Screen.height / rect.rect.height;
+            ScrollView.transform.localScale = new Vector3(yScale, yScale, 1);
+
             if (blockClickGroup != null)
                 blockClickGroup.interactable = false;
         }
