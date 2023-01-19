@@ -375,7 +375,7 @@ namespace NpcScan
 
         private GameObject CreateButton(Transform parent, Model.CharacterInfo type, string text, float minWidth = 100, float minHeight = 50)
         {
-            var gameObject = GameObjectCreationUtils.InstantiateUIElement(parent, "Button");
+            var gameObject = GameObjectCreationUtils.InstantiateUIElement(parent, "BuildingQuickButton");
             SetTransform(gameObject.transform);
             gameObject.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = text;
             var element = gameObject.AddComponent<LayoutElement>();
