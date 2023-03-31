@@ -23,6 +23,7 @@ namespace NpcScan
         public bool transgender { get; set; }
         public bool bisexual { get; set; }
         public int age { get; set; }
+        public int xiangshuInfection { get; set; }
         public int[] location { get; set; }
         public int attraction { get; set; }
         public int creatingType { get; set; }
@@ -55,9 +56,10 @@ namespace NpcScan
 
             FullName full = character.GetFullName();
             fullname = new int[9] { full.Type, full.CustomSurnameId, full.CustomGivenNameId, full.SurnameId, full.GivenNameGroupId, full.GivenNameSuffixId, full.GivenNameType, full.ZangPrefixId, full.ZangSuffixId };
-            (surname, givenname) = DomainManager.Character.GetRealName(id);
+                (surname, givenname) = DomainManager.Character.GetRealName(id);
 
             age = character.GetActualAge();
+            xiangshuInfection = character.GetXiangshuInfection();
             gender = character.GetGender();
             monkType = character.GetMonkType();
 

@@ -20,6 +20,7 @@ namespace NpcScan
         public bool transgender { get; set; }
         public bool bisexual { get; set; }
         public int age { get; set; }
+        public int xiangshuInfection { get; set; }
         public int[] location { get; set; }
         public int attraction { get; set; }
         public int creatingType { get; set; }

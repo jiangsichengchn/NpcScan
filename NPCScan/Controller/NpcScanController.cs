@@ -382,19 +382,33 @@ namespace NpcScan.Controller
 
         public bool CheckInt(CharacterData character)
         {
-            int minAge = intInputValue[0];
+            int minAge = intInputValue[(int)Model.Input.最低年龄];
             if (minAge != 0)
             {
                 if (character.age < minAge)
                     return false;
             }
-            int maxAge = intInputValue[1];
+            int maxAge = intInputValue[(int)Model.Input.最大年龄];
             if (maxAge != 0)
             {
                 if (character.age > maxAge)
                     return false;
             }
-            for (int index = 2, attributeIndex = 0; index < 8; ++index, ++attributeIndex)
+
+            int minInfection = intInputValue[(int)Model.Input.入魔值下限];
+            if (minInfection != 0)
+            {
+                if (character.xiangshuInfection < minInfection)
+                    return false;
+            }
+            int maxInfection = intInputValue[(int)Model.Input.入魔值上限];
+            if (maxInfection != 0)
+            {
+                if (character.xiangshuInfection > maxInfection)
+                    return false;
+            }
+
+            for (int index = (int)Model.Input.膂力, attributeIndex = 0; index <= (int)Model.Input.悟性; ++index, ++attributeIndex)
             {
                 int value = intInputValue[index];
                 if (value != 0)
@@ -403,25 +417,25 @@ namespace NpcScan.Controller
                         return false;
                 }
             }
-            int charm = intInputValue[8];
+            int charm = intInputValue[(int)Model.Input.魅力];
             if (charm != 0)
             {
                 if (character.attraction < charm)
                     return false;
             }
-            int health = intInputValue[9];
+            int health = intInputValue[(int)Model.Input.健康];
             if (health != 0)
             {
                 if (character.maxLeftHealth < health)
                     return false;
             }
-            int samsara = intInputValue[10];
+            int samsara = intInputValue[(int)Model.Input.轮回次数];
             if (samsara != 0)
             {
                 if (character.preexistenceCharacterNames.Length < samsara)
                     return false;
             }
-            for (int index = 11, combatSkillIndex = 0; index < 25; ++index, ++combatSkillIndex)
+            for (int index = (int)Model.Input.内功, combatSkillIndex = 0; index <= (int)Model.Input.乐器; ++index, ++combatSkillIndex)
             {
                 int value = intInputValue[index];
                 if (value != 0)
@@ -430,7 +444,7 @@ namespace NpcScan.Controller
                         return false;
                 }
             }
-            for (int index = 25, lifeSkillIndex = 0; index < 41; ++index, ++lifeSkillIndex)
+            for (int index = (int)Model.Input.音律, lifeSkillIndex = 0; index <= (int)Model.Input.杂学; ++index, ++lifeSkillIndex)
             {
                 int value = intInputValue[index];
                 if (value != 0)
@@ -674,7 +688,7 @@ namespace NpcScan.Controller
         public void GetIntInput()
         {
             intInputValue.Clear();
-            for (int index=0; index<41; ++index)
+            for (int index=(int)Model.Input.最低年龄; index<=(int)Model.Input.杂学; ++index)
             {
                 int value = 0;
                 int.TryParse(view.InputDic[(Model.Input)index].text, out value);
@@ -686,7 +700,7 @@ namespace NpcScan.Controller
         public void GetStringInput()
         {
             stringInputValue.Clear();
-            for (int index = 41; index < 47; ++index)
+            for (int index = (int)Model.Input.角色ID; index <= (int)Model.Input.物品; ++index)
             {
                 stringInputValue.Add(view.InputDic[(Model.Input)index].text);
             }

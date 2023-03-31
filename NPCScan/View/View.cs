@@ -136,7 +136,12 @@ namespace NpcScan
             CreateInputField(basicInfo.transform, Model.Input.最低年龄);
             CreateLabel(basicInfo.transform, "-");
             CreateInputField(basicInfo.transform, Model.Input.最大年龄);
-           
+
+            CreateLabel(basicInfo.transform, "入魔值:");
+            CreateInputField(basicInfo.transform, Model.Input.入魔值下限);
+            CreateLabel(basicInfo.transform, "-");
+            CreateInputField(basicInfo.transform, Model.Input.入魔值上限);
+
             for (index=(int)Model.Input.膂力; index<= (int)Model.Input.轮回次数; ++index)
             {
                 CreateLabel(basicInfo.transform, ((Model.Input) index).ToString() + ":");
@@ -211,12 +216,12 @@ namespace NpcScan
             multiSearch.transform.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
             multiSearch.childForceExpandWidth = false;
 
-            for (index = 41; index < 45; ++index)
+            for (index = (int)Model.Input.角色ID; index <= (int)Model.Input.身份; ++index)
             {
                 CreateLabel(multiSearch.transform, ((Model.Input)index).ToString() + ":");
                 CreateInputField(multiSearch.transform, (Model.Input)index, minWidth:150);
             }
-            for (index = 45; index < 47; ++index)
+            for (index = (int)Model.Input.特性; index <= (int)Model.Input.物品; ++index)
             {
                 CreateLabel(multiSearch.transform, ((Model.Input)index).ToString() + ":");
                 CreateInputField(multiSearch.transform, (Model.Input)index, minWidth:400);
