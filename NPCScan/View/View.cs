@@ -1,4 +1,6 @@
 ﻿using FrameWork.ModSystem;
+using HarmonyLib;
+using HarmonyLib.Tools;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -14,14 +16,15 @@ namespace NpcScan
         public Dictionary<Model.Toggle, CToggle> ToggleDic;
         public Dictionary<Model.CharacterInfo, CButton> ButtonDic;
 
-        public Transform scrollContent;
-        public List<List<Transform>> resultLabels;
-        public CButton buttonNext;
-        public CButton buttonPrevious;
-        public CButton buttonSearch;
-        public CButton buttonUpdate;
-        public TextMeshProUGUI pageCount;
-        public VerticalLayoutGroup inputContainer;
+        public Transform ScrollDataContent;
+        public Transform ScrollTitleContent;
+        public List<List<Transform>> ResultLabels;
+        public CButton ButtonNext;
+        public CButton ButtonPrevious;
+        public CButton ButtonSearch;
+        public CButton ButtonUpdate;
+        public TextMeshProUGUI PageCount;
+        public VerticalLayoutGroup InputContainer;
         public GameObject ScrollView;
 
         private int index = 0;
@@ -57,24 +60,24 @@ namespace NpcScan
             mask.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
             mask.name = "Mask";
 
-            inputContainer = new GameObject("InputContainer").AddComponent<VerticalLayoutGroup>();
-            inputContainer.spacing = 30;
-            SetTransform(root.transform, inputContainer.transform);
-            inputContainer.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
-            inputContainer.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0.95f);
-            inputContainer.GetComponent<RectTransform>().anchorMax = new Vector2(1, 0.95f);
-            inputContainer.transform.localScale = new Vector3(0.6f, 0.6f, 1);
+            InputContainer = new GameObject("InputContainer").AddComponent<VerticalLayoutGroup>();
+            InputContainer.spacing = 30;
+            SetTransform(root.transform, InputContainer.transform);
+            InputContainer.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
+            InputContainer.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0.95f);
+            InputContainer.GetComponent<RectTransform>().anchorMax = new Vector2(1, 0.95f);
+            InputContainer.transform.localScale = new Vector3(0.6f, 0.6f, 1);
 
-            var text = GameObjectCreationUtils.InstantiateUIElement(inputContainer.transform, "Text");
+            var text = GameObjectCreationUtils.InstantiateUIElement(InputContainer.transform, "Text");
             text.GetComponent<TextMeshProUGUI>().text = "Npc查找器";
             text.transform.name = "title";
             SetTransform(text.transform);
 
             //InitTooltip();
-            InitFilterContainer(inputContainer);          
-            InitScrollView();            
+            InitFilterContainer(InputContainer);
+            InitScrollView();
 
-            LayoutRebuilder.ForceRebuildLayoutImmediate(inputContainer.GetComponent<RectTransform>());
+            LayoutRebuilder.ForceRebuildLayoutImmediate(InputContainer.GetComponent<RectTransform>());
         }
 
         public void Destroy()
@@ -116,7 +119,7 @@ namespace NpcScan
             filterContainer.childForceExpandHeight = false;
             filterContainer.gameObject.AddComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
             filterContainer.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
-            SetTransform(container.transform, filterContainer.transform);           
+            SetTransform(container.transform, filterContainer.transform);
 
             CreateBasicInfo(filterContainer);
             CreateCombatSkillInfo(filterContainer);
@@ -124,7 +127,7 @@ namespace NpcScan
             CreateToggleGroup(filterContainer);
             CreateMultiSearch(filterContainer);
         }
-        
+
         private void CreateBasicInfo(VerticalLayoutGroup parent)
         {
             var basicInfo = new GameObject("BasicInfo").AddComponent<HorizontalLayoutGroup>();
@@ -142,10 +145,10 @@ namespace NpcScan
             CreateLabel(basicInfo.transform, "-");
             CreateInputField(basicInfo.transform, Model.Input.入魔值上限);
 
-            for (index=(int)Model.Input.膂力; index<= (int)Model.Input.轮回次数; ++index)
+            for (index = (int)Model.Input.膂力; index <= (int)Model.Input.轮回次数; ++index)
             {
-                CreateLabel(basicInfo.transform, ((Model.Input) index).ToString() + ":");
-                CreateInputField(basicInfo.transform, (Model.Input) index);
+                CreateLabel(basicInfo.transform, ((Model.Input)index).ToString() + ":");
+                CreateInputField(basicInfo.transform, (Model.Input)index);
             }
         }
 
@@ -186,7 +189,7 @@ namespace NpcScan
 
             CreateLabel(toggleGroup.transform, "性别:");
             for (index = (int)Model.Toggle.全部性别; index <= (int)Model.Toggle.女性; ++index)
-            {               
+            {
                 CreateToggle(toggleGroup.transform, (Model.Toggle)index, ((Model.Toggle)index).ToString());
             }
 
@@ -219,44 +222,54 @@ namespace NpcScan
             for (index = (int)Model.Input.角色ID; index <= (int)Model.Input.身份; ++index)
             {
                 CreateLabel(multiSearch.transform, ((Model.Input)index).ToString() + ":");
-                CreateInputField(multiSearch.transform, (Model.Input)index, minWidth:150);
+                CreateInputField(multiSearch.transform, (Model.Input)index, minWidth: 150);
             }
             for (index = (int)Model.Input.特性; index <= (int)Model.Input.物品; ++index)
             {
                 CreateLabel(multiSearch.transform, ((Model.Input)index).ToString() + ":");
-                CreateInputField(multiSearch.transform, (Model.Input)index, minWidth:400);
+                CreateInputField(multiSearch.transform, (Model.Input)index, minWidth: 400);
             }
 
-            buttonSearch = CreateButton(multiSearch.transform, Model.CharacterInfo.查找, "查找").GetComponent<CButton>();
-            buttonUpdate = CreateButton(multiSearch.transform, Model.CharacterInfo.更新数据, "更新数据").GetComponent<CButton>();
-            buttonPrevious = CreateButton(multiSearch.transform, Model.CharacterInfo.上一页, "上一页").GetComponent<CButton>();
-            buttonNext = CreateButton(multiSearch.transform, Model.CharacterInfo.下一页, "下一页").GetComponent<CButton>();
-            pageCount = CreateLabel(multiSearch.transform, "").GetComponent<TextMeshProUGUI>();
+            ButtonSearch = CreateButton(multiSearch.transform, Model.CharacterInfo.查找, "查找").GetComponent<CButton>();
+            ButtonUpdate = CreateButton(multiSearch.transform, Model.CharacterInfo.更新数据, "更新数据").GetComponent<CButton>();
+            ButtonPrevious = CreateButton(multiSearch.transform, Model.CharacterInfo.上一页, "上一页").GetComponent<CButton>();
+            ButtonNext = CreateButton(multiSearch.transform, Model.CharacterInfo.下一页, "下一页").GetComponent<CButton>();
+            PageCount = CreateLabel(multiSearch.transform, "").GetComponent<TextMeshProUGUI>();
         }
         #endregion
 
         #region InitScrollView
         private void InitScrollView()
-        {           
-            ScrollView = ABResourceManager.Instantiate("ScrollView");
+        {
+            ScrollView = ABResourceManager.Instantiate("ScrollView1");
             SetTransform(root.transform, ScrollView.transform);
             var rect = ScrollView.GetComponent<RectTransform>();
             rect.pivot = new Vector2(0, 1);
             rect.anchorMin = new Vector2(0, 0.05f);
             rect.anchorMax = new Vector2(1, 0.8f);
             rect.localScale = new Vector3(0.8f, 0.8f, 1);
-            ScrollView.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.2f, 1);            
-            ScrollView.GetComponent<ScrollRect>().movementType = ScrollRect.MovementType.Clamped;
-            ScrollView.GetComponent<ScrollRect>().horizontal = false;
-            ScrollView.GetComponent<ScrollRect>().scrollSensitivity = 25;
 
-            scrollContent = ScrollView.transform.Find("Viewport").Find("Content").transform;
-            scrollContent.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            scrollContent.gameObject.GetComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.MinSize;
-            scrollContent.gameObject.AddComponent<VerticalLayoutGroup>().spacing = 20;
+            ScrollTitleContent = ScrollView.transform.Find("Title/Viewport/Content");
+            var scrollTitle = ScrollView.transform.Find("Title");
+            scrollTitle.gameObject.AddComponent<LayoutElement>().minHeight = 55;
+            scrollTitle.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.2f, 1);
+            ScrollTitleContent.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            ScrollTitleContent.gameObject.GetComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.MinSize;
+            ScrollTitleContent.gameObject.AddComponent<VerticalLayoutGroup>().spacing = 20;
 
-            CreateTitle(scrollContent);
-            CreateScanResult(scrollContent);          
+            ScrollDataContent = ScrollView.transform.Find("ItemList/Viewport/Content");
+            var scrollData = ScrollView.transform.Find("ItemList");
+            scrollData.gameObject.AddComponent<LayoutElement>().flexibleHeight = 1f;
+            scrollData.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.2f, 1);
+            scrollData.GetComponent<ScrollRect>().movementType = ScrollRect.MovementType.Clamped;
+            scrollData.GetComponent<ScrollRect>().horizontal = false;
+            scrollData.GetComponent<ScrollRect>().scrollSensitivity = 25;
+            ScrollDataContent.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            ScrollDataContent.gameObject.GetComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.MinSize;
+            ScrollDataContent.gameObject.AddComponent<VerticalLayoutGroup>().spacing = 20;
+
+            CreateTitle(ScrollTitleContent);
+            CreateScanResult(ScrollDataContent);
         }
 
         private void CreateTitle(Transform parent)
@@ -280,18 +293,18 @@ namespace NpcScan
             }
             for (index = (int)Model.CharacterInfo.前世; index <= (int)Model.CharacterInfo.前世; ++index)
             {
-                CreateButton(buttonTitle.transform, (Model.CharacterInfo)index, ((Model.CharacterInfo)index).ToString(), minWidth:300);
+                CreateButton(buttonTitle.transform, (Model.CharacterInfo)index, ((Model.CharacterInfo)index).ToString(), minWidth: 300);
             }
             for (index = (int)Model.CharacterInfo.物品; index <= (int)Model.CharacterInfo.人物特性; ++index)
             {
-                CreateButton(buttonTitle.transform, (Model.CharacterInfo)index, ((Model.CharacterInfo)index).ToString(), minWidth:1000);
+                CreateButton(buttonTitle.transform, (Model.CharacterInfo)index, ((Model.CharacterInfo)index).ToString(), minWidth: 1000);
             }
         }
 
         private void CreateScanResult(Transform parent)
         {
-            resultLabels = new List<List<Transform>>();  
-            for (int rowIndex=0; rowIndex<50; ++rowIndex)
+            ResultLabels = new List<List<Transform>>();
+            for (int rowIndex = 0; rowIndex < 50; ++rowIndex)
             {
                 var line = new GameObject("line" + rowIndex.ToString()).AddComponent<HorizontalLayoutGroup>();
                 line.spacing = 20;
@@ -314,7 +327,7 @@ namespace NpcScan
                         minWidth = 50;
 
                     var lable = CreateLabel(line.transform, "", minWidth: minWidth).transform;
-                    rowLabels.Add(lable);                  
+                    rowLabels.Add(lable);
                 }
                 for (index = (int)Model.CharacterInfo.前世; index <= (int)Model.CharacterInfo.前世; ++index)
                 {
@@ -325,12 +338,12 @@ namespace NpcScan
                 for (index = (int)Model.CharacterInfo.物品; index <= (int)Model.CharacterInfo.人物特性; ++index)
                 {
                     var lable = CreateLabel(line.transform, "", minWidth: 1000).transform;
-                    lable.gameObject.GetComponent<TextMeshProUGUI>().alignment = TextAlignmentOptions.TopJustified;                    
+                    lable.gameObject.GetComponent<TextMeshProUGUI>().alignment = TextAlignmentOptions.TopJustified;
 
                     rowLabels.Add(lable);
                 }
 
-                resultLabels.Add(rowLabels);
+                ResultLabels.Add(rowLabels);
             }
         }
         #endregion
@@ -403,21 +416,21 @@ namespace NpcScan
         {
             transform.localPosition = Vector3.zero;
             transform.localScale = new Vector3(1, 1, 1);
-        }       
+        }
 
         public void Show()
         {
             root.SetActive(true);
 
-            float xScale = Screen.width / inputContainer.preferredWidth;
-            inputContainer.transform.localScale = new Vector3(xScale, xScale, 1);
+            float xScale = Screen.width / InputContainer.preferredWidth;
+            InputContainer.transform.localScale = new Vector3(xScale, xScale, 1);
 
-            float height = inputContainer.preferredHeight * inputContainer.transform.localScale.x;
+            float height = InputContainer.preferredHeight * InputContainer.transform.localScale.x;
             float yAnchor = 1 - (0.05f * Screen.height + height) / Screen.height;
             var rect = ScrollView.GetComponent<RectTransform>();
             rect.anchorMax = new Vector2(1, yAnchor);
             float yScale = yAnchor * Screen.height / rect.rect.height;
-            ScrollView.transform.localScale = new Vector3(yScale, yScale, 1);
+            ScrollView.transform.localScale = new Vector3(xScale, yScale, 1);
 
             if (blockClickGroup != null)
                 blockClickGroup.interactable = false;

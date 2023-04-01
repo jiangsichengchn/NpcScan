@@ -34,16 +34,16 @@ namespace NpcScan.Controller
 
         public void AddListener()
         {
-            view.buttonNext.onClick.AddListener(() => NextPage());
-            view.buttonPrevious.onClick.AddListener(() => PreviousPage());
-            view.buttonSearch.onClick.AddListener(() => { SetOptions(); SearchResult(0); });
-            view.buttonUpdate.onClick.AddListener(() => GetAllCharacters());
+            view.ButtonNext.onClick.AddListener(() => NextPage());
+            view.ButtonPrevious.onClick.AddListener(() => PreviousPage());
+            view.ButtonSearch.onClick.AddListener(() => { SetOptions(); SearchResult(0); });
+            view.ButtonUpdate.onClick.AddListener(() => GetAllCharacters());
             for (int index=0; index<51; ++index)
             {
                 int i = index;
                 view.ButtonDic[(Model.CharacterInfo)i].onClick.AddListener(()=>SortClick(i));
                 if (i < 50)
-                    view.resultLabels[i][0].parent.GetComponent<CButton>().onClick.AddListener(()=>OpenCharacterMenu(i));
+                    view.ResultLabels[i][0].parent.GetComponent<CButton>().onClick.AddListener(()=>OpenCharacterMenu(i));
             }
         }
 
@@ -175,9 +175,9 @@ namespace NpcScan.Controller
             else if (Input.GetKey(KeyCode.LeftShift))
             {
                 if (Input.GetKeyUp(KeyCode.PageUp))
-                    view.inputContainer.transform.localScale += new Vector3(0.05f, 0.05f, 0);
+                    view.InputContainer.transform.localScale += new Vector3(0.05f, 0.05f, 0);
                 else if (Input.GetKeyUp(KeyCode.PageDown))
-                    view.inputContainer.transform.localScale -= new Vector3(0.05f, 0.05f, 0);
+                    view.InputContainer.transform.localScale -= new Vector3(0.05f, 0.05f, 0);
             }
             else if (Input.GetKeyUp(KeyCode.PageUp))
             {
@@ -257,14 +257,14 @@ namespace NpcScan.Controller
                 page = 1;               
             }
                 
-            view.pageCount.text = page + "/" + ((Model.Instance.CurrentDataList.Count-1) / 50 + 1);
+            view.PageCount.text = page + "/" + ((Model.Instance.CurrentDataList.Count-1) / 50 + 1);
             int startIndex = (page - 1) * 50;
             int length = Math.Min(50, Model.Instance.CurrentDataList.Count - startIndex);
             WorldMapModel instance = SingletonObject.getInstance<WorldMapModel>();
 
             for (int row = 0; row < 50; ++row)
             {
-                List<Transform> rowLabels = view.resultLabels[row];
+                List<Transform> rowLabels = view.ResultLabels[row];
                 for (int col = 0; col <51; ++col)
                 {
                     rowLabels[col].GetComponent<TextMeshProUGUI>().text = "";
@@ -274,7 +274,7 @@ namespace NpcScan.Controller
             {
                 CharacterData characterData = Model.Instance.CurrentDataList[startIndex + index];
 
-                List<Transform> rowLabels = view.resultLabels[index];             
+                List<Transform> rowLabels = view.ResultLabels[index];             
 
                 rowLabels[(int)Model.CharacterInfo.姓名].GetComponent<TextMeshProUGUI>().text = characterData.name;
                 rowLabels[(int)Model.CharacterInfo.年龄].GetComponent<TextMeshProUGUI>().text = characterData.age.ToString();
