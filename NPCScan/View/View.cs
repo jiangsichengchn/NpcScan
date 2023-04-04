@@ -78,6 +78,7 @@ namespace NpcScan
             InitScrollView();
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(InputContainer.GetComponent<RectTransform>());
+            LayoutRebuilder.ForceRebuildLayoutImmediate(ScrollView.GetComponent<RectTransform>());
         }
 
         public void Destroy()
@@ -393,7 +394,7 @@ namespace NpcScan
 
         private GameObject CreateButton(Transform parent, Model.CharacterInfo type, string text, float minWidth = 100, float minHeight = 50)
         {
-            var gameObject = GameObjectCreationUtils.InstantiateUIElement(parent, "BuildingQuickButton");
+            var gameObject = GameObjectCreationUtils.InstantiateUIElement(parent, "Button");
             SetTransform(gameObject.transform);
             gameObject.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = text;
             var element = gameObject.AddComponent<LayoutElement>();
@@ -425,11 +426,12 @@ namespace NpcScan
             float xScale = Screen.width / InputContainer.preferredWidth;
             InputContainer.transform.localScale = new Vector3(xScale, xScale, 1);
 
-            float height = InputContainer.preferredHeight * InputContainer.transform.localScale.x;
+            float height = InputContainer.preferredHeight * InputContainer.transform.localScale.y;
             float yAnchor = 1 - (0.05f * Screen.height + height) / Screen.height;
             var rect = ScrollView.GetComponent<RectTransform>();
             rect.anchorMax = new Vector2(1, yAnchor);
             float yScale = yAnchor * Screen.height / rect.rect.height;
+            xScale = Screen.width / rect.rect.width;
             ScrollView.transform.localScale = new Vector3(xScale, yScale, 1);
 
             if (blockClickGroup != null)
