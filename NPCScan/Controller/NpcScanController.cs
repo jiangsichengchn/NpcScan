@@ -29,7 +29,7 @@ namespace NpcScan.Controller
                 AddListener();
                 HideUI();
                 page = 1;
-            }           
+            }
         }
 
         public void AddListener()
@@ -38,12 +38,12 @@ namespace NpcScan.Controller
             view.ButtonPrevious.onClick.AddListener(() => PreviousPage());
             view.ButtonSearch.onClick.AddListener(() => { SetOptions(); SearchResult(0); });
             view.ButtonUpdate.onClick.AddListener(() => GetAllCharacters());
-            for (int index=0; index<51; ++index)
+            for (int index = 0; index < 51; ++index)
             {
                 int i = index;
-                view.ButtonDic[(Model.CharacterInfo)i].onClick.AddListener(()=>SortClick(i));
+                view.ButtonDic[(Model.CharacterInfo)i].onClick.AddListener(() => SortClick(i));
                 if (i < 50)
-                    view.ResultLabels[i][0].parent.GetComponent<CButton>().onClick.AddListener(()=>OpenCharacterMenu(i));
+                    view.ResultLabels[i][0].parent.GetComponent<CButton>().onClick.AddListener(() => OpenCharacterMenu(i));
             }
         }
 
@@ -107,7 +107,7 @@ namespace NpcScan.Controller
             }
             SearchResult(0);
         }
-        
+
         public int ItemCompare(CharacterData character1, CharacterData character2)
         {
             List<int[]> Item1 = character1.items;
@@ -132,9 +132,9 @@ namespace NpcScan.Controller
         #endregion
 
         public void OpenCharacterMenu(int index)
-        {            
+        {
             UIManager.Instance.HideUI(UIElement.CharacterMenu);
-            int dataIndex = (page - 1) * 50 + index;           
+            int dataIndex = (page - 1) * 50 + index;
             if (Model.Instance.CurrentDataList.Count > dataIndex)
             {
                 CharacterData data = Model.Instance.CurrentDataList[dataIndex];
@@ -144,13 +144,13 @@ namespace NpcScan.Controller
                     isShow = false;
                     CommandKitBase.SetDisable(false);
                     GMFunc.EnterCharacterMenu(data.id);
-                }    
-            }               
+                }
+            }
         }
-       
+
         public void Update()
         {
-            if (Input.GetKeyUp(mainFormKey))
+            if (Input.GetKey(mainFormKey))
             {
                 if (isShow)
                 {
@@ -165,7 +165,10 @@ namespace NpcScan.Controller
                     CommandKitBase.SetDisable(true);
                 }
             }
-            else if (Input.GetKey(KeyCode.LeftAlt))
+            if (!isShow)
+                return;
+
+            if (Input.GetKey(KeyCode.LeftAlt))
             {
                 if (Input.GetKeyUp(KeyCode.PageUp))
                     view.ScrollView.transform.localScale += new Vector3(0.05f, 0.05f, 0);
@@ -182,11 +185,11 @@ namespace NpcScan.Controller
             else if (Input.GetKeyUp(KeyCode.PageUp))
             {
                 PreviousPage();
-            }               
+            }
             else if (Input.GetKeyUp(KeyCode.PageDown))
             {
                 NextPage();
-            }                
+            }
             else if (Input.GetKeyUp(KeyCode.Return))
             {
                 if (Model.Instance.AllDataList.Count == 0)
@@ -197,13 +200,13 @@ namespace NpcScan.Controller
                 {
                     SetOptions();
                     SearchResult(0);
-                }               
+                }
             }
         }
 
         private void GetAllCharacters()
         {
-            SingletonObject.getInstance<AsynchMethodDispatcher>().AsynchMethodCall(97, 0, (offset, dataPool) =>
+            SingletonObject.getInstance<AsyncMethodDispatcher>().AsyncMethodCall(97, 0, (offset, dataPool) =>
             {
                 string AllCharacterString;
                 using (var memoryMappedFile = MemoryMappedFile.OpenExisting("NpcScanData"))
@@ -222,12 +225,12 @@ namespace NpcScan.Controller
                 SetOptions();
                 SearchResult(0);
             });
-        }       
+        }
 
         private int _page;
         public int page
         {
-            get 
+            get
             {
                 return _page;
             }
@@ -254,10 +257,10 @@ namespace NpcScan.Controller
                 page -= 1;
             if (direction == 0)
             {
-                page = 1;               
+                page = 1;
             }
-                
-            view.PageCount.text = page + "/" + ((Model.Instance.CurrentDataList.Count-1) / 50 + 1);
+
+            view.PageCount.text = page + "/" + ((Model.Instance.CurrentDataList.Count - 1) / 50 + 1);
             int startIndex = (page - 1) * 50;
             int length = Math.Min(50, Model.Instance.CurrentDataList.Count - startIndex);
             WorldMapModel instance = SingletonObject.getInstance<WorldMapModel>();
@@ -265,7 +268,7 @@ namespace NpcScan.Controller
             for (int row = 0; row < 50; ++row)
             {
                 List<Transform> rowLabels = view.ResultLabels[row];
-                for (int col = 0; col <51; ++col)
+                for (int col = 0; col < 51; ++col)
                 {
                     rowLabels[col].GetComponent<TextMeshProUGUI>().text = "";
                 }
@@ -274,7 +277,7 @@ namespace NpcScan.Controller
             {
                 CharacterData characterData = Model.Instance.CurrentDataList[startIndex + index];
 
-                List<Transform> rowLabels = view.ResultLabels[index];             
+                List<Transform> rowLabels = view.ResultLabels[index];
 
                 rowLabels[(int)Model.CharacterInfo.姓名].GetComponent<TextMeshProUGUI>().text = characterData.name;
                 rowLabels[(int)Model.CharacterInfo.年龄].GetComponent<TextMeshProUGUI>().text = characterData.age.ToString();
@@ -347,7 +350,7 @@ namespace NpcScan.Controller
 
                 rowLabels[(int)Model.CharacterInfo.人物特性].GetComponent<TextMeshProUGUI>().text = string.Join(",", characterData.featureList);
             }
-        }       
+        }
 
         public void NextPage()
         {
@@ -561,7 +564,7 @@ namespace NpcScan.Controller
                     {
                         return word[4] == '+' && featureToGroup[targetWord].All(targetFeature =>
                         featureToLevel[targetFeature] < 0 || character.featureList.All(feature => !feature.Equals(targetFeature)));
-                    }                   
+                    }
                 }
 
                 return character.featureList.All(feature => !feature.Contains(word));
@@ -688,13 +691,13 @@ namespace NpcScan.Controller
         public void GetIntInput()
         {
             intInputValue.Clear();
-            for (int index=(int)Model.Input.最低年龄; index<=(int)Model.Input.杂学; ++index)
+            for (int index = (int)Model.Input.最低年龄; index <= (int)Model.Input.杂学; ++index)
             {
                 int value = 0;
                 int.TryParse(view.InputDic[(Model.Input)index].text, out value);
                 intInputValue.Add(value);
             }
-                
+
         }
 
         public void GetStringInput()

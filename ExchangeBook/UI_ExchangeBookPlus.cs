@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using Config;
@@ -10,7 +9,6 @@ using FrameWork;
 using GameData.Common;
 using GameData.Domains.Character;
 using GameData.Domains.Character.Display;
-using GameData.Domains.Character.Relation;
 using GameData.Domains.Item;
 using GameData.Domains.Item.Display;
 using GameData.GameDataBridge;
@@ -289,14 +287,14 @@ public class UI_ExchangeBookPlus : UIBase
 
 	private void OnListenerIdReady()
 	{
-		AsynchMethodCall(3, 2, _organizationId, delegate(int offset, RawDataPool dataPool)
+		AsyncMethodCall(3, 2, _organizationId, delegate(int offset, RawDataPool dataPool)
 		{
 			List<CharacterDisplayData> item = null;
 			Serializer.Deserialize(dataPool, offset, ref item);
 			_npcDatas.AddRange(item);
 			if (item.Count > 0)
 			{
-				AsynchMethodCall(4, 96, _npcDatas[0].CharacterId, delegate(int offsetOrg, RawDataPool dataPoolOrg)
+				AsyncMethodCall(4, 96, _npcDatas[0].CharacterId, delegate(int offsetOrg, RawDataPool dataPoolOrg)
 				{
 					Serializer.Deserialize(dataPoolOrg, offsetOrg, ref _approveHighestGrave);
 				});
@@ -583,7 +581,8 @@ public class UI_ExchangeBookPlus : UIBase
 			{
 				num -= num2;
 				int arg = _authorities[characterId] + num2;
-				GameDataBridge.AddMethodCall<int, Inventory, Inventory, int, int>(-1, 14, 5, characterId, inventory, null, num, arg);
+                //GameDataBridge.AddMethodCall<int, int, string, string>(-1, 12, 46, _taiwuId, characterId, "换书", "换书");
+                GameDataBridge.AddMethodCall<int, Inventory, Inventory, int, int>(-1, 14, 5, characterId, inventory, null, num, arg);
 				num2 = 0;
 				inventory.Items.Clear();
 			}
@@ -597,7 +596,7 @@ public class UI_ExchangeBookPlus : UIBase
 	{
 		if (_isCombatSkill)
 		{
-			AsynchMethodCall(14, 9, _npcDatas[index].CharacterId, arg2: false, delegate(int offset, RawDataPool dataPool)
+			AsyncMethodCall(14, 9, _npcDatas[index].CharacterId, arg2: false, delegate(int offset, RawDataPool dataPool)
 			{
 				List<ItemDisplayData> item2 = new List<ItemDisplayData>();
 				Serializer.Deserialize(dataPool, offset, ref item2);
@@ -606,12 +605,12 @@ public class UI_ExchangeBookPlus : UIBase
 				{
 					item3.SpecialArg = index;
 					SetBookAuthority(item3);
-					AsynchMethodCall(6, 14, item3.Key, OnGetPageInfo);
+					AsyncMethodCall(6, 14, item3.Key, OnGetPageInfo);
 				}
 			});
 			return;
 		}
-		AsynchMethodCall(14, 9, _npcDatas[index].CharacterId, arg2: true, delegate(int offset, RawDataPool dataPool)
+		AsyncMethodCall(14, 9, _npcDatas[index].CharacterId, arg2: true, delegate(int offset, RawDataPool dataPool)
 		{
 			List<ItemDisplayData> item = new List<ItemDisplayData>();
 			Serializer.Deserialize(dataPool, offset, ref item);
@@ -622,7 +621,7 @@ public class UI_ExchangeBookPlus : UIBase
 				{
 					item4.SpecialArg = index;
 					SetBookAuthority(item4);
-					AsynchMethodCall(6, 14, item4.Key, OnGetPageInfo);
+					AsyncMethodCall(6, 14, item4.Key, OnGetPageInfo);
 				}
 			}
 		});
