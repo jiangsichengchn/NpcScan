@@ -7,10 +7,14 @@ using Config;
 using DG.Tweening;
 using FrameWork;
 using GameData.Common;
+using GameData.Domains;
 using GameData.Domains.Character;
 using GameData.Domains.Character.Display;
 using GameData.Domains.Item;
 using GameData.Domains.Item.Display;
+using GameData.Domains.Merchant;
+using GameData.Domains.TaiwuEvent;
+using GameData.Domains.TaiwuEvent.DisplayEvent;
 using GameData.GameDataBridge;
 using GameData.Serializer;
 using GameData.Utilities;
@@ -528,19 +532,19 @@ public class UI_ExchangeBookPlus : UIBase
 		itemData.Price = (int)((double)itemData.Price * (0.5 + 0.5 * (double)itemData.Durability / (double)itemData.MaxDurability) / 10.0 * (double)num / 100.0);
 	}
 
-	public override void QuickHide()
-	{
-		ResetPage();
-		foreach (KeyValuePair<int, List<ItemDisplayData>> npcItem in _npcItems)
-		{
-			List<ItemKey> arg = npcItem.Value.ConvertAll((ItemDisplayData element) => element.Key);
-			GameDataBridge.AddMethodCall(Element.GameDataListenerId, 14, 4, npcItem.Key, arg, !_isCombatSkill);
-		}
-		AudioManager.Instance.PlaySound("ui_default_cancel");
-		base.QuickHide();
-	}
+    public override void QuickHide()
+    {
+        ResetPage();
+        foreach (KeyValuePair<int, List<ItemDisplayData>> npcItem in _npcItems)
+        {
+            //MerchantDomainHelper.MethodCall.GetTradeBookDisplayData(Element.GameDataListenerId, npcItem.Key, !_isCombatSkill);
+            //MerchantDomainHelper.MethodCall.FinishBookTrade(npcItem.Key, !_isCombatSkill);
+        }
+        AudioManager.Instance.PlaySound("ui_default_cancel");
+        base.QuickHide();
+    }
 
-	protected override void OnClick(CButton btn)
+    protected override void OnClick(CButton btn)
 	{
 		if (btn.name == "Close")
 		{
@@ -568,24 +572,29 @@ public class UI_ExchangeBookPlus : UIBase
 	private void ChangeBook()
 	{
 		_exchangeList.Sort((ItemDisplayData a, ItemDisplayData b) => a.SpecialArg.CompareTo(a.SpecialArg));
-		Inventory inventory = new Inventory();
-		int num = _authorities[_taiwuId];
-		int num2 = 0;
+		List<ItemDisplayData> boughtItems = new List<ItemDisplayData>();
+		List<ItemDisplayData> soldItems = new List<ItemDisplayData>();
+		int selfAuthority = _authorities[_taiwuId];
+		int npcAuthority = 0;
+
 		for (int i = 0; i < _exchangeList.Count; i++)
 		{
-			inventory.Items.Add(_exchangeList[i].Key, _exchangeList[i].Amount);
-			num2 += _exchangeList[i].Price;
+			boughtItems.Add(_exchangeList[i]);
+            npcAuthority += _exchangeList[i].Price;
 			int characterId = _npcDatas[_exchangeList[i].SpecialArg].CharacterId;
 			_npcItems[characterId].Remove(_exchangeList[i]);
 			if (i == _exchangeList.Count - 1 || _exchangeList[i].SpecialArg != _exchangeList[i + 1].SpecialArg)
 			{
-				num -= num2;
-				int arg = _authorities[characterId] + num2;
-                //GameDataBridge.AddMethodCall<int, int, string, string>(-1, 12, 46, _taiwuId, characterId, "换书", "换书");
-                GameDataBridge.AddMethodCall<int, Inventory, Inventory, int, int>(-1, 14, 5, characterId, inventory, null, num, arg);
-				num2 = 0;
-				inventory.Items.Clear();
-			}
+                MerchantDomainHelper.MethodCall.GetTradeBookDisplayData(Element.GameDataListenerId, characterId, !_isCombatSkill);
+
+                selfAuthority -= npcAuthority;
+				int npcNewAuthority = _authorities[characterId] + npcAuthority;
+				MerchantDomainHelper.MethodCall.ExchangeBook(characterId, boughtItems, soldItems, selfAuthority, npcNewAuthority);
+                npcAuthority = 0;
+                boughtItems.Clear();
+
+                MerchantDomainHelper.MethodCall.FinishBookTrade(characterId, !_isCombatSkill);
+            }
 		}
 		_exchangeList.Clear();
 		UpdateExchangeAreaDisplay();
@@ -596,21 +605,23 @@ public class UI_ExchangeBookPlus : UIBase
 	{
 		if (_isCombatSkill)
 		{
-			AsyncMethodCall(14, 9, _npcDatas[index].CharacterId, arg2: false, delegate(int offset, RawDataPool dataPool)
+			AsyncMethodCall(DomainHelper.DomainIds.Merchant, MerchantDomainHelper.MethodIds.GetTradeBookDisplayData, _npcDatas[index].CharacterId, arg2: false, delegate(int offset, RawDataPool dataPool)
 			{
 				List<ItemDisplayData> item2 = new List<ItemDisplayData>();
 				Serializer.Deserialize(dataPool, offset, ref item2);
 				_npcItems.Add(_npcDatas[index].CharacterId, item2);
 				foreach (ItemDisplayData item3 in item2)
 				{
-					item3.SpecialArg = index;
+					item3.ItemSourceType = 4;
+					item3.OwnerCharId = _npcDatas[index].CharacterId;
+                    item3.SpecialArg = index;
 					SetBookAuthority(item3);
 					AsyncMethodCall(6, 14, item3.Key, OnGetPageInfo);
 				}
 			});
 			return;
 		}
-		AsyncMethodCall(14, 9, _npcDatas[index].CharacterId, arg2: true, delegate(int offset, RawDataPool dataPool)
+		AsyncMethodCall(DomainHelper.DomainIds.Merchant, MerchantDomainHelper.MethodIds.GetTradeBookDisplayData, _npcDatas[index].CharacterId, arg2: true, delegate(int offset, RawDataPool dataPool)
 		{
 			List<ItemDisplayData> item = new List<ItemDisplayData>();
 			Serializer.Deserialize(dataPool, offset, ref item);

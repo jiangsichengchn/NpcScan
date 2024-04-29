@@ -263,8 +263,9 @@ namespace NpcScan
             scrollData.gameObject.AddComponent<LayoutElement>().flexibleHeight = 1f;
             scrollData.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.2f, 1);
             scrollData.GetComponent<ScrollRect>().movementType = ScrollRect.MovementType.Clamped;
-            scrollData.GetComponent<ScrollRect>().horizontal = false;
+            //scrollData.GetComponent<ScrollRect>().horizontal = false;
             scrollData.GetComponent<ScrollRect>().scrollSensitivity = 25;
+            //scrollData.GetComponent<ScrollRect>().horizontalScrollbar = scrollTitle.GetComponent<ScrollRect>().horizontalScrollbar;
             ScrollDataContent.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             ScrollDataContent.gameObject.GetComponent<ContentSizeFitter>().horizontalFit = ContentSizeFitter.FitMode.MinSize;
             ScrollDataContent.gameObject.AddComponent<VerticalLayoutGroup>().spacing = 20;

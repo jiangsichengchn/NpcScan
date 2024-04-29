@@ -87,7 +87,7 @@ public class UIBuilder
 		Object.Destroy(gameObject6.transform.Find("Load/").gameObject);
 		RectTransform component = gameObject6.GetComponent<RectTransform>();
 		component.SetWidth(component.rect.width * 2f);
-		component.anchoredPosition = new Vector2(-200f, -164f);
+		component.anchoredPosition = new Vector2(1047f, 684f);
 		gameObject6.transform.Find("NpcItemScroll/").gameObject.GetComponent<RectTransform>().SetWidth(1696f);
 		GameObject gameObject7 = Object.Instantiate(UI_Reading.transform.Find("MainWindow/BookBg/LifeSkillTypeTogGroup/"), gameObject6.transform).gameObject;
 		gameObject7.name = "LifeSkillTypeTogGroup";

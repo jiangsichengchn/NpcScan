@@ -150,7 +150,7 @@ namespace NpcScan.Controller
 
         public void Update()
         {
-            if (Input.GetKey(mainFormKey))
+            if (Input.GetKeyDown(mainFormKey))
             {
                 if (isShow)
                 {

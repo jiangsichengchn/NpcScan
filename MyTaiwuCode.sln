@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RealTimeModifyCharacterBack
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExchangeBook", "ExchangeBook\ExchangeBook.csproj", "{28598758-E5C7-4773-9894-3A6FB9E82BF0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RandomReadingStrategies", "RandomReadingStrategies\RandomReadingStrategies.csproj", "{821933A6-01C0-417F-A271-82BA24187A85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{28598758-E5C7-4773-9894-3A6FB9E82BF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28598758-E5C7-4773-9894-3A6FB9E82BF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28598758-E5C7-4773-9894-3A6FB9E82BF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{821933A6-01C0-417F-A271-82BA24187A85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{821933A6-01C0-417F-A271-82BA24187A85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{821933A6-01C0-417F-A271-82BA24187A85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{821933A6-01C0-417F-A271-82BA24187A85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -54,6 +54,8 @@ namespace NpcScan.Utils
         public static string GetQualificationGrowth(int age, int growthType)
         {
             AgeEffectItem ageEffectItem = AgeEffect.Instance[Mathf.Min(age, AgeEffect.Instance.Count - 1)];
+            if (ageEffectItem == null)
+                return "";
             int num = 0;
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Clear();
@@ -70,6 +72,8 @@ namespace NpcScan.Utils
                 case 2:
                     stringBuilder.Append(LocalStringManager.Get("LK_Qualification_Growth_LateBlooming"));
                     num = ageEffectItem.SkillQualificationLateBlooming;
+                    break;
+                default:
                     break;
             }
             if (num > 0)
