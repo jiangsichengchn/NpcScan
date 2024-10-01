@@ -39,7 +39,7 @@ public class MainPatch : TaiwuRemakeHarmonyPlugin
 	{
 		if (exchangeCombatSkillBookBtn == null)
 		{
-			GameObject gameObject = __instance.transform.Find("AnimationRoot/BackGround/BackPanel/Supprot/ShowCombatSkillTree/").gameObject;
+			GameObject gameObject = __instance.transform.Find("AnimationRoot/BackGround/BackPanel/Buttons/Supprot/ShowCombatSkillTree/").gameObject;
 			GameObject gameObject2 = Object.Instantiate(gameObject, gameObject.transform.parent);
 			gameObject2.GetComponent<RectTransform>().anchoredPosition = new Vector2(300f, 16.8f);
             gameObject2.GetComponentInChildren<TextMeshProUGUI>().SetCharArray("门派换书".ToCharArray());
@@ -55,7 +55,7 @@ public class MainPatch : TaiwuRemakeHarmonyPlugin
 		}
 		if (exchangeLifeSkillBookBtn == null)
 		{
-			GameObject gameObject3 = __instance.transform.Find("AnimationRoot/BackGround/BackPanel/Supprot/ShowCombatSkillTree/").gameObject;
+			GameObject gameObject3 = __instance.transform.Find("AnimationRoot/BackGround/BackPanel/Buttons/Supprot/ShowCombatSkillTree/").gameObject;
 			GameObject gameObject4 = Object.Instantiate(gameObject3, gameObject3.transform.parent);
 			gameObject4.GetComponent<RectTransform>().anchoredPosition = new Vector2(550f, 16.8f);
             gameObject4.GetComponentInChildren<TextMeshProUGUI>().SetCharArray("技艺换书".ToCharArray());

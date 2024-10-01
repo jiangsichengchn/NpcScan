@@ -13,8 +13,8 @@ using GameData.Domains.Character.Display;
 using GameData.Domains.Item;
 using GameData.Domains.Item.Display;
 using GameData.Domains.Merchant;
-using GameData.Domains.TaiwuEvent;
-using GameData.Domains.TaiwuEvent.DisplayEvent;
+using GameData.Domains.Organization;
+using GameData.Domains.Taiwu;
 using GameData.GameDataBridge;
 using GameData.Serializer;
 using GameData.Utilities;
@@ -158,8 +158,8 @@ public class UI_ExchangeBookPlus : UIBase
 		_confirm = obj.transform.Find("MainWindow/ExchangeArea/ConfirmFrame/Confirm").gameObject.GetComponent<CButton>();
 		AddMono(obj.transform.Find("MainWindow/NpcBooks/ImgTitle36/Title").gameObject.GetComponent<TextMeshProUGUI>(), "NpcTitle");
 		_npcItemScroll = obj.transform.Find("MainWindow/NpcBooks/NpcItemScroll/").gameObject.GetComponent<ItemScrollView>();
-		AddMono(obj.transform.Find("MainWindow/ExchangeArea/SelfPrestige/").gameObject.GetComponent<RectTransform>(), "SelfAuthority");
-		AddMono(obj.transform.Find("MainWindow/ExchangeArea/Load/").gameObject.GetComponent<RectTransform>(), "Load");
+		AddMono(obj.transform.Find("MainWindow/ExchangeArea/SelfInfoLayout/SelfPrestige/").gameObject.GetComponent<RectTransform>(), "SelfAuthority");
+		AddMono(obj.transform.Find("MainWindow/ExchangeArea/SelfInfoLayout/Load/").gameObject.GetComponent<RectTransform>(), "Load");
 		_confirm.ClearAndAddListener(delegate
 		{
 			OnClick(_confirm);
@@ -291,14 +291,14 @@ public class UI_ExchangeBookPlus : UIBase
 
 	private void OnListenerIdReady()
 	{
-		AsyncMethodCall(3, 2, _organizationId, delegate(int offset, RawDataPool dataPool)
+		AsyncMethodCall(3, OrganizationDomainHelper.MethodIds.GetSettlementMembers, _organizationId, delegate(int offset, RawDataPool dataPool)
 		{
 			List<CharacterDisplayData> item = null;
 			Serializer.Deserialize(dataPool, offset, ref item);
 			_npcDatas.AddRange(item);
 			if (item.Count > 0)
 			{
-				AsyncMethodCall(4, 96, _npcDatas[0].CharacterId, delegate(int offsetOrg, RawDataPool dataPoolOrg)
+				AsyncMethodCall(4, CharacterDomainHelper.MethodIds.GetHighestGradeCombatSkillById, _npcDatas[0].CharacterId, delegate(int offsetOrg, RawDataPool dataPoolOrg)
 				{
 					Serializer.Deserialize(dataPoolOrg, offsetOrg, ref _approveHighestGrave);
 				});
@@ -492,7 +492,9 @@ public class UI_ExchangeBookPlus : UIBase
 		if (!itemView.IsLocked)
 		{
 			ItemDisplayData data = itemView.Data;
-			_exchangeList.Add(data);
+			ItemDisplayData tradeItem = data.Clone(1);
+			tradeItem.ItemSourceType = ItemSourceType.Inventory.ToSbyte();
+			_exchangeList.Add(tradeItem);
 			_currItems.Remove(data);
 			UpdateShopDisplay();
 			UpdateExchangeAreaDisplay();
@@ -589,12 +591,12 @@ public class UI_ExchangeBookPlus : UIBase
 
                 selfAuthority -= npcAuthority;
 				int npcNewAuthority = _authorities[characterId] + npcAuthority;
-				MerchantDomainHelper.MethodCall.ExchangeBook(characterId, boughtItems, soldItems, selfAuthority, npcNewAuthority);
+				MerchantDomainHelper.MethodCall.ExchangeBook(characterId, boughtItems, soldItems, selfAuthority, npcNewAuthority);				
                 npcAuthority = 0;
                 boughtItems.Clear();
 
-                MerchantDomainHelper.MethodCall.FinishBookTrade(characterId, !_isCombatSkill);
-            }
+				MerchantDomainHelper.MethodCall.FinishBookTrade(characterId, !_isCombatSkill);
+			}
 		}
 		_exchangeList.Clear();
 		UpdateExchangeAreaDisplay();
@@ -616,7 +618,8 @@ public class UI_ExchangeBookPlus : UIBase
 					item3.OwnerCharId = _npcDatas[index].CharacterId;
                     item3.SpecialArg = index;
 					SetBookAuthority(item3);
-					AsyncMethodCall(6, 14, item3.Key, OnGetPageInfo);
+					AsyncMethodCall(6, ItemDomainHelper.MethodIds.GetSkillBookPagesInfo
+						, item3.Key, OnGetPageInfo);
 				}
 			});
 			return;
@@ -632,7 +635,7 @@ public class UI_ExchangeBookPlus : UIBase
 				{
 					item4.SpecialArg = index;
 					SetBookAuthority(item4);
-					AsyncMethodCall(6, 14, item4.Key, OnGetPageInfo);
+					AsyncMethodCall(6, ItemDomainHelper.MethodIds.GetSkillBookPagesInfo, item4.Key, OnGetPageInfo);
 				}
 			}
 		});
