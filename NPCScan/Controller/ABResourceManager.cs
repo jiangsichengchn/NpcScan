@@ -39,7 +39,7 @@ namespace NpcScan
             var curModInfo = ModManager.GetModInfo(ModManager.EnabledMods[index]);
             var modDir = curModInfo.DirectoryName;
             modPath = modDir;
-            var abPath = Path.Combine(modDir, "Bundle/asset.ab");
+            var abPath = Path.Combine(modDir, "Bundle/asset2.ab");
             
             if(!File.Exists(abPath))
                 throw new Exception($"加载AB包失败，AB包：{abPath} 不存在！");
@@ -63,7 +63,7 @@ namespace NpcScan
             }
             var curModInfo = ModManager.GetModInfo(ModManager.EnabledMods[index]);
             var modDir = curModInfo.DirectoryName;
-            var abPath = Path.Combine(modDir, "Bundle/asset.ab");
+            var abPath = Path.Combine(modDir, "Bundle/asset2.ab");
             
             _token = new CancellationTokenSource();
             

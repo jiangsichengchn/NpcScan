@@ -39,6 +39,7 @@ namespace NpcScan
         public int[] preexistenceCharacterIds { get; set; }
         public List<int> featureIds { get; set; }
         public List<int> potentialFeatureIds { get; set; }
+        public int jilue {  get; set; }
         public int isAlive { get; set; }
 
         public string organization;

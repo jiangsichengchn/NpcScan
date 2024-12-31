@@ -38,10 +38,11 @@ namespace NpcScan.Controller
             view.ButtonPrevious.onClick.AddListener(() => PreviousPage());
             view.ButtonSearch.onClick.AddListener(() => { SetOptions(); SearchResult(0); });
             view.ButtonUpdate.onClick.AddListener(() => GetAllCharacters());
-            for (int index = 0; index < 51; ++index)
+            for (int index = 0; index <= (int)Model.CharacterInfo.人物特性; ++index)
             {
                 int i = index;
                 view.ButtonDic[(Model.CharacterInfo)i].onClick.AddListener(() => SortClick(i));
+                //这里的50是每页最大数量
                 if (i < 50)
                     view.ResultLabels[i][0].parent.GetComponent<CButton>().onClick.AddListener(() => OpenCharacterMenu(i));
             }
@@ -50,15 +51,16 @@ namespace NpcScan.Controller
         #region sort
         public void SortClick(int index)
         {
-            if (index >= 12 && index <= 17)
-                Model.Instance.CurrentDataList = Model.Instance.CurrentDataList.OrderByDescending(character => character.maxMainAttributes[index - 12]).ToList();
-            else if (index >= 18 && index <= 31)
+			//Model.CharacterInfo eInfo = (Model.CharacterInfo)index;
+			if (index >= (int)Model.CharacterInfo.膂力 && index <= (int)Model.CharacterInfo.悟性)
+                Model.Instance.CurrentDataList = Model.Instance.CurrentDataList.OrderByDescending(character => character.maxMainAttributes[index - (int)Model.CharacterInfo.膂力]).ToList();
+            else if (index >= (int)Model.CharacterInfo.内功 && index <= (int)Model.CharacterInfo.乐器)
             {
-                Model.Instance.CurrentDataList = Model.Instance.CurrentDataList.OrderByDescending(character => character.combatSkillQualifications[index - 18]).ToList();
+                Model.Instance.CurrentDataList = Model.Instance.CurrentDataList.OrderByDescending(character => character.combatSkillQualifications[index - (int)Model.CharacterInfo.内功]).ToList();
             }
-            else if (index >= 32 && index <= 47)
+            else if (index >= (int)Model.CharacterInfo.音律 && index <= (int)Model.CharacterInfo.杂学)
             {
-                Model.Instance.CurrentDataList = Model.Instance.CurrentDataList.OrderByDescending(character => character.lifeSkillQualifications[index - 32]).ToList();
+                Model.Instance.CurrentDataList = Model.Instance.CurrentDataList.OrderByDescending(character => character.lifeSkillQualifications[index - (int)Model.CharacterInfo.音律]).ToList();
             }
             else
             {
@@ -100,7 +102,10 @@ namespace NpcScan.Controller
                     case 11:
                         Model.Instance.CurrentDataList = Model.Instance.CurrentDataList.OrderByDescending(character => character.maxLeftHealth).ToList();
                         break;
-                    case 49:
+                    case (int)Model.CharacterInfo.机略:
+						Model.Instance.CurrentDataList = Model.Instance.CurrentDataList.OrderByDescending(character => character.jilue).ToList();
+						break;
+					case (int)Model.CharacterInfo.物品:
                         Model.Instance.CurrentDataList.Sort(ItemCompare);
                         break;
                 }
@@ -330,7 +335,9 @@ namespace NpcScan.Controller
                 for (int attributeIndex = 0; attributeIndex < 6; ++attributeIndex)
                     rowLabels[(int)Model.CharacterInfo.膂力 + attributeIndex].GetComponent<TextMeshProUGUI>().text = characterData.maxMainAttributes[attributeIndex].ToString();
 
-                for (int combatSkillIndex = 0; combatSkillIndex < 14; ++combatSkillIndex)
+				rowLabels[(int)Model.CharacterInfo.机略].GetComponent<TextMeshProUGUI>().text = $"{characterData.jilue}";
+
+				for (int combatSkillIndex = 0; combatSkillIndex < 14; ++combatSkillIndex)
                 {
                     var text = rowLabels[(int)Model.CharacterInfo.内功 + combatSkillIndex].GetComponent<TextMeshProUGUI>();
                     text.text = characterData.combatSkillQualifications[combatSkillIndex].ToString();

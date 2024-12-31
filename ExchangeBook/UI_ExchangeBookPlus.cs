@@ -72,6 +72,11 @@ public class UI_ExchangeBookPlus : UIBase
 
 	private CToggleGroup _completePageTogGroup;
 
+	private GameObject firstPage;
+	private GameObject directPage;
+	private GameObject reversePage;
+	private GameObject completePage;
+
 	private CButton _confirm;
 
 	private bool _isCombatSkill;
@@ -186,10 +191,14 @@ public class UI_ExchangeBookPlus : UIBase
 		{
 			UpdateCurrList();
 		};
-		_firstPageTogGroup = _npcItemScroll.transform.Find("ItemSortAndFilter/FirstPageFilter/").gameObject.GetComponent<CToggleGroup>();
-		_directPageTogGroup = _npcItemScroll.transform.Find("ItemSortAndFilter/DirectPageFilter/").gameObject.GetComponent<CToggleGroup>();
-		_reversePageTogGroup = _npcItemScroll.transform.Find("ItemSortAndFilter/ReversePageFilter/").gameObject.GetComponent<CToggleGroup>();
-		_completePageTogGroup = _npcItemScroll.transform.Find("ItemSortAndFilter/CompletePageFilter/").gameObject.GetComponent<CToggleGroup>();
+		firstPage = _npcItemScroll.transform.Find("ItemSortAndFilter/FirstPageFilter/").gameObject;
+        _firstPageTogGroup = firstPage.GetComponent<CToggleGroup>();
+        directPage = _npcItemScroll.transform.Find("ItemSortAndFilter/DirectPageFilter/").gameObject;
+        _directPageTogGroup = directPage.GetComponent<CToggleGroup>();
+        reversePage = _npcItemScroll.transform.Find("ItemSortAndFilter/ReversePageFilter/").gameObject;
+        _reversePageTogGroup = reversePage.GetComponent<CToggleGroup>();
+        completePage = _npcItemScroll.transform.Find("ItemSortAndFilter/CompletePageFilter/").gameObject;
+        _completePageTogGroup = completePage.GetComponent<CToggleGroup>();
 		_firstPageTogGroup.InitPreOnToggle();
 		_firstPageTogGroup.OnActiveToggleChange = delegate
 		{
@@ -257,7 +266,11 @@ public class UI_ExchangeBookPlus : UIBase
 			{
 				_skillTypeTogGroup.Set(1);
 			}
-		}
+			firstPage.SetActive(true);
+			directPage.SetActive(true);
+			reversePage.SetActive(true);
+			completePage.SetActive(true);
+        }
 		else
 		{
 			for (int k = 1; k < _skillTypeTogGroup.transform.childCount; k++)
@@ -272,7 +285,11 @@ public class UI_ExchangeBookPlus : UIBase
 				component2.CGet<CImage>("Icon").SetSprite(filterLifeSkillTypeIcon);
                 component2.CGet<GameObject>("BookCountBack").SetActive(false);
             }
-		}
+            firstPage.SetActive(false);
+            directPage.SetActive(false);
+            reversePage.SetActive(false);
+            completePage.SetActive(true);
+        }
 		_confirm.interactable = false;
 		_npcItemScroll.Init();
 		_npcItemScroll.SetItemList(ref _currItems, reset: true, "exchange_book_npc", _npcItemScroll.SortAndFilter.IsDetailView, OnRenderNpcItem);

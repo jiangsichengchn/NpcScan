@@ -242,7 +242,7 @@ namespace NpcScan
         #region InitScrollView
         private void InitScrollView()
         {
-            ScrollView = ABResourceManager.Instantiate("ScrollView1");
+            ScrollView = ABResourceManager.Instantiate("ScrollView2");
             SetTransform(root.transform, ScrollView.transform);
             var rect = ScrollView.GetComponent<RectTransform>();
             rect.pivot = new Vector2(0, 1);
@@ -355,7 +355,7 @@ namespace NpcScan
 
         private GameObject CreateInputField(Transform parent, Model.Input type, string text = "", float minWidth = 100, float minHeight = 50)
         {
-            var gameObject = ABResourceManager.Instantiate("InputField");
+            var gameObject = ABResourceManager.Instantiate("InputField2");
             SetTransform(parent, gameObject.transform);
             var element = gameObject.AddComponent<LayoutElement>();
             element.minWidth = minWidth;
